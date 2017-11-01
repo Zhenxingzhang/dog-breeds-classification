@@ -29,7 +29,6 @@ def infer(model_name, img_raw):
 
         df = pd.DataFrame(data={'prob': probs.reshape(-1), 'breed': breeds})
 
-
         return df.sort_values(['prob'], ascending=False)
 
 
@@ -42,6 +41,7 @@ def classify(resource_type, path):
             img_raw = f.read()
 
     return infer(consts.CURRENT_MODEL_NAME, img_raw)
+
 
 if __name__ == '__main__':
     src = sys.argv[1]

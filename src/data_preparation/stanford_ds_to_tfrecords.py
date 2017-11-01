@@ -1,8 +1,5 @@
 import os
 import xml.etree.ElementTree
-
-import tensorflow as tf
-
 from src.common import consts
 import dataset
 from src.freezing import inception
@@ -49,7 +46,7 @@ if __name__ == '__main__':
     one_hot_encoder, _ = dataset.one_hot_label_encoder()
 
     with tf.Graph().as_default(), \
-         tf.Session().as_default() as sess, \
+            tf.Session().as_default() as sess, \
             tf.python_io.TFRecordWriter(paths.STANFORD_DS_TF_RECORDS,
                                         tf.python_io.TFRecordCompressionType.NONE) as writer:
 
@@ -61,16 +58,19 @@ if __name__ == '__main__':
             return inception_output
 
 
-        for breed_dir in [d for d in os.listdir(annotations_root_dir)]:
+        for breed_dir in [d for d in os.listdir(annotations_root_dir) if not d.startswith('.')]:
             print(breed_dir)
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
-                print(annotation_file)
+                # print(annotation_file)
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
 
                 # print(annotation)
 
                 one_hot_label = one_hot_encoder([annotation['breed']]).reshape(-1).tolist()
+                print(one_hot_label)
                 image = parse_image(breed_dir, annotation_file)
+
+                print(get_inception_ouput(image))
 
                 example = build_stanford_example(image, get_inception_ouput(image), one_hot_label, annotation)
 
