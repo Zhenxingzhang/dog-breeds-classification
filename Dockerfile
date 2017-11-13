@@ -1,7 +1,5 @@
 FROM python:2.7
 
-MAINTAINER Kirill Panarin <kirill.panarin@gmail.com>
-
 EXPOSE 8888
 EXPOSE 6006
 
@@ -22,6 +20,9 @@ COPY ./images /app/images
 COPY ./*.ipynb /app/
 #COPY ./summary /app/summary
 COPY ./setup /app/setup
+
+RUN mkdir /data
+VOLUME /data
 
 WORKDIR /app
 

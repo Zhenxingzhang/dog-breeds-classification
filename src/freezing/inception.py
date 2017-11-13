@@ -90,18 +90,6 @@ def inception_inference():
 
 if __name__ == '__main__':
 
-    labels = []
-    with open("data/frozen/inception/imagenet_synset_to_human_label_map.txt") as f:
-        for line in f:
-            label = [elt.strip() for elt in line.split('\t')][1]
-            # in alternative, if you need to use the file content as numbers
-            # inner_list = [int(elt.strip()) for elt in line.split(',')]
-            labels.append(label)
-
-    lb = preprocessing.LabelBinarizer()
-    lb.fit(labels)
-    print(lb.classes_.shape)
-
     with tf.Session().as_default() as sess:
         image_raw = tf.read_file('images/airedale.jpg').eval()
 
