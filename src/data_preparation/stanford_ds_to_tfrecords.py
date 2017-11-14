@@ -63,15 +63,8 @@ if __name__ == '__main__':
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
                 # print(annotation_file)
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
-
-                # print(annotation)
-
                 one_hot_label = one_hot_encoder([annotation['breed']]).reshape(-1).tolist()
-                print(one_hot_label)
                 image = parse_image(breed_dir, annotation_file)
-
-                print(get_inception_ouput(image))
-
                 example = build_stanford_example(image, get_inception_ouput(image), one_hot_label, annotation)
 
                 writer.write(example.SerializeToString())

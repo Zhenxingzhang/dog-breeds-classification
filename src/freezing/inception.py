@@ -103,9 +103,7 @@ if __name__ == '__main__':
         out = model(sess, image_raw)
         predictions = np.squeeze(out)
 
-        # ID --> English string label.
         node_lookup = NodeLookup()
-        # 取出前5个概率最大的值（top-5)
         top_5 = predictions.argsort()[-5:][::-1]
         for node_id in top_5:
             human_string = node_lookup.id_to_string(node_id)

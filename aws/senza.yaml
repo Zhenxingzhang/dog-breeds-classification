@@ -10,7 +10,7 @@ SenzaInfo:
         Default: "pierone.stups.zalan.do/echo/zzhang-experiment-app"
     - DockerTag:
         Description: "The Docker source tag"
-        Default: "0.1"
+        Default: "0.1-SNAPSHOT"
     - MintBucket:
         Description: "The mint S3 bucket for OAuth 2.0 credentials"
         Default: "zalando-stups-mint-{{AccountInfo.AccountID}}-{{AccountInfo.Region}}"

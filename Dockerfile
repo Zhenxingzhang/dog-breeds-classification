@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY jupyter_notebook_config.py /root/.jupyter/
 
+COPY scm-source.json /
 COPY ./src /app/src
 COPY ./images /app/images
 #COPY ./checkpoints /app/checkpoints
@@ -20,9 +21,6 @@ COPY ./images /app/images
 COPY ./*.ipynb /app/
 #COPY ./summary /app/summary
 COPY ./setup /app/setup
-
-RUN mkdir /data
-VOLUME /data
 
 WORKDIR /app
 
