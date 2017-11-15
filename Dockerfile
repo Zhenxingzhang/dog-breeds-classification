@@ -9,6 +9,15 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/
 RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "-vv", "-g", "--"]
 
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	tmux \
+	python-tk \
+	vim \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 EXPOSE 8888
 EXPOSE 6006
 
