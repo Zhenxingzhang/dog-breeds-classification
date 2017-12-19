@@ -10,7 +10,7 @@ SenzaInfo:
         Default: "pierone.stups.zalan.do/echo/zzhang-experiment-app"
     - DockerTag:
         Description: "The Docker source tag"
-        Default: "0.1-SNAPSHOT"
+        Default: "0.2-SNAPSHOT"
     - MintBucket:
         Description: "The mint S3 bucket for OAuth 2.0 credentials"
         Default: "zalando-stups-mint-{{AccountInfo.AccountID}}-{{AccountInfo.Region}}"
@@ -25,7 +25,7 @@ SenzaInfo:
         Default: "eu-west-1a"
     - EbsVolumeName:
         Description: "The value of the 'Name' tag associated with the EBS volume to attach (it's not the EBS volume ID!)"
-        Default: "ebs-zzhang-experiment"
+        Default: "dog-breeds-example"
 #    - s3Buckets:
 #        Description: "Names of S3 buckets (comma separated) to allow read/write access to."
 #        Default: "zalando-echo-eu-west-1-datasets"
@@ -48,7 +48,7 @@ SenzaComponents:
       # p2.* or g2.* instances are required for GPU computing. p2.* instances are recommended.
       InstanceType: "{{Arguments.InstanceType}}"
       # specify a spot price for the GPU instances
-      SpotPrice: 0.972
+#      SpotPrice: 0.972
       # Create a security group and IAM role at start up
       SecurityGroups:
         - "Fn::GetAtt" : [ "SecurityGroup" , "GroupId" ]

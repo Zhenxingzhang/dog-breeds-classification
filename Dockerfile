@@ -1,7 +1,5 @@
 FROM gcr.io/tensorflow/tensorflow:1.4.0-gpu
 
-COPY scm-source.json /
-
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
 # kernel crashes.
 ENV TINI_VERSION v0.14.0
@@ -26,7 +24,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY jupyter_notebook_config.py /root/.jupyter/
+#COPY jupyter_notebook_config.py /root/.jupyter/
 
 COPY ./src /app/src
 COPY ./images /app/images
@@ -35,7 +33,7 @@ COPY ./images /app/images
 #COPY ./data/train/labels.csv /app/data/train/
 #COPY ./data/*.tfrecords /app/data/
 #COPY ./data/breeds.csv /app/data/
-COPY ./*.ipynb /app/
+COPY ./notebooks/*.ipynb /app/notebooks/
 #COPY ./summary /app/summary
 COPY ./setup /app/setup
 
