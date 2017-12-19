@@ -155,10 +155,10 @@ Resources:
               Sid: "AllowMintRead"
               Resource: ["arn:aws:s3:::{{Arguments.MintBucket}}/{{Arguments.ApplicationId}}/*"]
          #Tweak to actual buckets/paths
-#        - PolicyName: S3Access
-#          PolicyDocument:
-#            Version: "2012-10-17"
-#            Statement:
-#            - Effect: Allow
-#              Action: "s3:*"
-#              Resource: {"Fn::Split" : [ ",", "{{Arguments.s3Buckets}}"]}
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action: "s3:*"
+              Resource: {"Fn::Split" : [ ",", "{{Arguments.s3Buckets}}"]}

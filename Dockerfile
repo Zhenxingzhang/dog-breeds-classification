@@ -1,5 +1,9 @@
 FROM gcr.io/tensorflow/tensorflow:1.4.0-gpu
 
+
+COPY run_tools.sh /
+RUN chmod +x /run_tools.sh
+
 # Add Tini. Tini operates as a process subreaper for jupyter. This prevents
 # kernel crashes.
 ENV TINI_VERSION v0.14.0
@@ -12,14 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	tmux \
 	python-tk \
 	vim \
+	git \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-EXPOSE 8888
-EXPOSE 6006
-
-WORKDIR /app
 
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
@@ -40,4 +40,4 @@ COPY ./setup /app/setup
 WORKDIR /app
 
 #CMD [ "jupyter", "notebook", "--allow-root"]
-CMD ["/bin/bash"]
+CMD ["/run_tools.sh", "--allow-root"]
