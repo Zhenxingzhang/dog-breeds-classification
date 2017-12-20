@@ -26,9 +26,9 @@ SenzaInfo:
     - EbsVolumeName:
         Description: "The value of the 'Name' tag associated with the EBS volume to attach (it's not the EBS volume ID!)"
         Default: "dog-breeds-example"
-#    - s3Buckets:
-#        Description: "Names of S3 buckets (comma separated) to allow read/write access to."
-#        Default: "zalando-echo-eu-west-1-datasets"
+    - s3Buckets:
+        Description: "Names of S3 buckets (comma separated) to allow read/write access to."
+        Default: "zalando-echo-eu-west-1-datasets"
     - InstanceType:
         Description: "The type on GPU instance you want"
         Default: p2.xlarge
@@ -155,10 +155,10 @@ Resources:
               Sid: "AllowMintRead"
               Resource: ["arn:aws:s3:::{{Arguments.MintBucket}}/{{Arguments.ApplicationId}}/*"]
          #Tweak to actual buckets/paths
-        - PolicyName: S3Access
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Effect: Allow
-              Action: "s3:*"
-              Resource: {"Fn::Split" : [ ",", "{{Arguments.s3Buckets}}"]}
+#        - PolicyName: S3Access
+#          PolicyDocument:
+#            Version: "2012-10-17"
+#            Statement:
+#            - Effect: Allow
+#              Action: "s3:*"
+#              Resource: {"Fn::Split" : [ ",", "{{Arguments.s3Buckets}}"]}

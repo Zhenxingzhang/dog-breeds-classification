@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
+
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -36,8 +38,6 @@ COPY ./images /app/images
 COPY ./notebooks/*.ipynb /app/notebooks/
 #COPY ./summary /app/summary
 COPY ./setup /app/setup
-
-WORKDIR /app
 
 #CMD [ "jupyter", "notebook", "--allow-root"]
 CMD ["/run_tools.sh", "--allow-root"]
