@@ -100,15 +100,7 @@ ENV/
 # mypy
 .mypy_cache/
 
-checkpoints/
-data/
-frozen/
-graphs/
-metrics/
-summary/
 .idea/
-dog_breeds/
-idea
-.DS_Store/
 .DS_Store
 scm-source.json
+data/

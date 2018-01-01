@@ -1,13 +1,10 @@
 import os
 import xml.etree.ElementTree
 from src.common import consts
-import dataset
+from src.data_preparation import dataset
 from src.freezing import inception
 from src.common import paths
 from tf_record_utils import *
-
-images_root_dir = os.path.join(paths.STANFORD_DS_DIR, 'Images')
-annotations_root_dir = os.path.join(paths.STANFORD_DS_DIR, 'Annotation')
 
 
 def parse_annotation(path):
@@ -42,30 +39,63 @@ def build_stanford_example(img_raw, inception_output, one_hot_label, annotation)
     return example
 
 
+def build_stanford_images(img_raw, label):
+    example_ = tf.train.Example(features=tf.train.Features(feature={
+        consts.IMAGE_RAW_FIELD: bytes_feature(img_raw),
+        consts.LABEL_ONE_HOT_FIELD: int64_feature(label)
+    }))
+
+    return example_
+
+
 if __name__ == '__main__':
-    one_hot_encoder, _ = dataset.one_hot_label_encoder()
+    images_root_dir = os.path.join(paths.STANFORD_DS_DIR, 'Images')
+    annotations_root_dir = os.path.join(paths.STANFORD_DS_DIR, 'Annotation')
 
+    # one_hot_encoder, _ = dataset.one_hot_label_encoder()
+    #
+    # with tf.Graph().as_default(), \
+    #         tf.Session().as_default() as sess, \
+    #         tf.python_io.TFRecordWriter(paths.STANFORD_DS_TF_RECORDS,
+    #                                     tf.python_io.TFRecordCompressionType.NONE) as writer:
+    #
+    #     incept_model = inception.inception_model()
+    #
+    #     def get_inception_ouput(img):
+    #         inception_output = incept_model(sess, img).reshape(-1).tolist()
+    #         return inception_output
+    #
+    #
+    #     for breed_dir in [d for d in os.listdir(annotations_root_dir) if not d.startswith('.')]:
+    #         print(breed_dir)
+    #         for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
+    #             # print(annotation_file)
+    #             annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
+    #             one_hot_label = one_hot_encoder([annotation['breed']]).reshape(-1).tolist()
+    #             image = parse_image(breed_dir, annotation_file)
+    #             example = build_stanford_example(image, get_inception_ouput(image), one_hot_label, annotation)
+    #
+    #             writer.write(example.SerializeToString())
+    #
+    #     writer.flush()
+    #     writer.close()
+    #
+    #     print('Finished')
+
+    one_hot_encoder, _ = dataset.sparse_label_coder()
     with tf.Graph().as_default(), \
-            tf.Session().as_default() as sess, \
-            tf.python_io.TFRecordWriter(paths.STANFORD_DS_TF_RECORDS,
-                                        tf.python_io.TFRecordCompressionType.NONE) as writer:
-
-        incept_model = inception.inception_model()
-
-
-        def get_inception_ouput(img):
-            inception_output = incept_model(sess, img).reshape(-1).tolist()
-            return inception_output
-
+        tf.Session().as_default() as sess, \
+        tf.python_io.TFRecordWriter(paths.STANFORD_DS_TF_RECORDS,
+                                    tf.python_io.TFRecordCompressionType.NONE) as writer:
 
         for breed_dir in [d for d in os.listdir(annotations_root_dir) if not d.startswith('.')]:
             print(breed_dir)
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
                 # print(annotation_file)
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
-                one_hot_label = one_hot_encoder([annotation['breed']]).reshape(-1).tolist()
+                one_hot_label = one_hot_encoder([annotation['breed']])[0]
                 image = parse_image(breed_dir, annotation_file)
-                example = build_stanford_example(image, get_inception_ouput(image), one_hot_label, annotation)
+                example = build_stanford_images(image, one_hot_label)
 
                 writer.write(example.SerializeToString())
 
