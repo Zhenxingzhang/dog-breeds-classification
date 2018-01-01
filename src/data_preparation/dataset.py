@@ -92,7 +92,7 @@ def images_dataset():
     return ds_, filenames_
 
 
-def get_train_val_data_iter(sess_, tf_records_paths_, buffer_size=20000, batch_size=64):
+def get_train_val_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
     ds_, file_names_ = images_dataset()
     ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
     sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})

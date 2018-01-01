@@ -13,7 +13,6 @@ mkdir -p /data/dog_breeds/stanford_ds/train
 mkdir -p /data/dog_breeds/stanford_ds/val
 mkdir -p /data/dog_breeds/stanford_ds/test
 mkdir -p /data/checkpoints/dog_breeds
-mkdir -p /data/checkpoints/dog_breeds/0.001
 mkdir -p /data/frozen/dog_breeds
 mkdir -p /data/graphs/dog_breeds
 mkdir -p /data/metrics/dog_breeds

@@ -30,13 +30,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./src /app/src
 COPY ./images /app/images
-#COPY ./checkpoints /app/checkpoints
-#COPY ./frozen /app/frozen
-#COPY ./data/train/labels.csv /app/data/train/
-#COPY ./data/*.tfrecords /app/data/
-#COPY ./data/breeds.csv /app/data/
+COPY ./data/breeds.csv /app/data/breeds.csv
 COPY ./notebooks/*.ipynb /app/notebooks/
-#COPY ./summary /app/summary
 COPY ./setup /app/setup
 
 #CMD [ "jupyter", "notebook", "--allow-root"]

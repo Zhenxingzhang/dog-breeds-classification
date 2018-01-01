@@ -30,7 +30,7 @@ if __name__ == "__main__":
     images_root_dir = os.path.join(paths.DATA_ROOT, 'Images')
     annotations_root_dir = os.path.join(paths.DATA_ROOT, 'Annotation')
 
-    one_hot_encoder, _ = dataset.sparse_label_coder()
+    one_hot_encoder, _, _ = dataset.sparse_label_coder()
 
     csv_file = paths.CSV_FILE
     print('Creating csv:{}'.format(csv_file))
