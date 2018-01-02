@@ -69,8 +69,7 @@ def read_image_record(record):
             'label': tf.FixedLenFeature([], tf.int64),
             'width': tf.FixedLenFeature([], tf.int64),
             'height': tf.FixedLenFeature([], tf.int64),
-            'image': tf.FixedLenFeature([], tf.string),
-            'filename': tf.FixedLenFeature([], tf.string)
+            'image': tf.FixedLenFeature([], tf.string)
         })
 
     with tf.device('/cpu'):
@@ -171,9 +170,6 @@ if __name__ == '__main__':
                 images = batch_examples["image_resize"]
                 label = batch_examples["label"]
                 idx += 1
-                # if idx == 15912:
-                print('{}:{}'.format(idx, batch_examples['filename']))
-                    # print("{}-{}".format(batch_examples["height"], batch_examples["width"]))
 
         except tf.errors.OutOfRangeError:
             print('End of the dataset')
