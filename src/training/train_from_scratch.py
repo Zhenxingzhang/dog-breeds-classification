@@ -3,7 +3,7 @@ from src.models.conv_net import conv_net
 from src.common import paths
 from src.data_preparation import dataset
 import os
-
+import datetime
 
 if __name__ == "__main__":
     BATCH_SIZE = 128
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     with tf.name_scope("input"):
         input_images = tf.placeholder(tf.float32, shape=[None, IMAGE_HEIGHT, IMAGE_WIDTH, 3])
         label = tf.placeholder(tf.int64)
-        input_images_summary = tf.summary.image('input/images', input_images)
+        input_images_summary = tf.summary.image('images', input_images)
 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
@@ -54,8 +54,16 @@ if __name__ == "__main__":
 
         sess.run(tf.global_variables_initializer())
 
-        train_writer = tf.summary.FileWriter(os.path.join(paths.TRAIN_SUMMARY_DIR, str(LEARNING_RATE)), sess.graph)
-        val_writer = tf.summary.FileWriter(os.path.join(paths.VAL_SUMMARY_DIR, str(LEARNING_RATE)), sess.graph)
+        train_writer = tf.summary.FileWriter(
+            os.path.join(paths.TRAIN_SUMMARY_DIR,
+                         str(LEARNING_RATE),
+                         datetime.datetime.now().strftime("%Y%m%d-%H%M")),
+            sess.graph)
+        val_writer = tf.summary.FileWriter(
+            os.path.join(paths.VAL_SUMMARY_DIR,
+                         str(LEARNING_RATE),
+                         datetime.datetime.now().strftime("%Y%m%d-%H%M")),
+            sess.graph)
 
         print("Start training with ")
 
@@ -71,7 +79,7 @@ if __name__ == "__main__":
             _, step_loss, step_summary = sess.run([train_op, loss_mean, summary_op],
                                                   feed_dict={input_images: train_images,
                                                              label: train_labels,
-                                                             keep_prob_tensor: 0.6})
+                                                             keep_prob_tensor: 1.0})
             train_writer.add_summary(step_summary, i)
             print("Step {}, train loss: {}".format(i, step_loss))
 
