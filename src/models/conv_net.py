@@ -113,9 +113,9 @@ def conv_pool_layer(input_tensor, filter_size, num_filters, layer_name, act=tf.n
 
 # MODEL
 def conv_net(x_input, categories, keep_prob_=None):
-    img = tf.cast(x_input, tf.float32)
-    batch_imgs = (img - 128.0) / 128.0
-    out_1 = conv_pool_layer(batch_imgs, filter_size=3, num_filters=16, layer_name='conv_1', pool=False)
+    x_input = tf.cast(x_input, tf.float32)
+    x_input = (x_input - 128.0) / 128.0
+    out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=16, layer_name='conv_1', pool=False)
     out_2 = conv_pool_layer(out_1, filter_size=3, num_filters=16, layer_name='conv_pool_2')
     out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_3', pool=False)
     out_4 = conv_pool_layer(out_3, filter_size=3, num_filters=32, layer_name='conv_pool_4')
