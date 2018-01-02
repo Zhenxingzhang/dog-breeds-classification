@@ -69,19 +69,21 @@ def read_image_record(record):
             'label': tf.FixedLenFeature([], tf.int64),
             'width': tf.FixedLenFeature([], tf.int64),
             'height': tf.FixedLenFeature([], tf.int64),
-            'image': tf.FixedLenFeature([], tf.string)
+            'image': tf.FixedLenFeature([], tf.string),
+            'filename': tf.FixedLenFeature([], tf.string)
         })
-    image = tf.decode_raw(features['image'], tf.uint8)
 
-    # features['image_array'] = tf.decode_raw(features['image'], tf.uint8)
-    height_ = tf.cast(features['height'], tf.int32)
-    width_ = tf.cast(features['width'], tf.int32)
+    with tf.device('/cpu'):
+        image = tf.decode_raw(features['image'], tf.uint8)
 
-    image_shape = tf.stack([height_, width_, 3])
-    image = tf.reshape(image, image_shape)
+        # features['image_array'] = tf.decode_raw(features['image'], tf.uint8)
+        height_ = tf.cast(features['height'], tf.int32)
+        width_ = tf.cast(features['width'], tf.int32)
+        image_shape = tf.stack([height_, width_, 3])
+        image = tf.reshape(image, image_shape)
 
-    features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-        image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
+        features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
+            image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
     return features
 
 
@@ -160,7 +162,7 @@ if __name__ == '__main__':
         ds_iter = ds.batch(1).make_initializable_iterator()
         next_record = ds_iter.get_next()
 
-        sess.run(ds_iter.initializer, feed_dict={filenames: paths.VAL_TF_RECORDS})
+        sess.run(ds_iter.initializer, feed_dict={filenames: paths.TRAIN_TF_RECORDS})
 
         idx = 0
         try:
@@ -169,7 +171,9 @@ if __name__ == '__main__':
                 images = batch_examples["image_resize"]
                 label = batch_examples["label"]
                 idx += 1
-                print(idx)
+                # if idx == 15912:
+                print('{}:{}'.format(idx, batch_examples['filename']))
+                    # print("{}-{}".format(batch_examples["height"], batch_examples["width"]))
 
         except tf.errors.OutOfRangeError:
             print('End of the dataset')

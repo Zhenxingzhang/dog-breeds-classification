@@ -1,9 +1,8 @@
 import tensorflow as tf
 import numpy as np
 from tqdm import tqdm
-from PIL import Image
+import scipy.misc
 from src.common import paths
-from src.data_preparation import tf_record_utils
 import os
 import re
 
@@ -25,7 +24,7 @@ def csv_to_record(csv_file, tfrecord_file):
     with tf.python_io.TFRecordWriter(tfrecord_file) as writer:
         for line in tqdm(lines):
             path = str(line.split(',')[0])
-            image = np.array(Image.open(path))
+            image = np.array(scipy.misc.imread(path, flatten=False, mode='RGB'))
             height = image.shape[0]
             width = image.shape[1]
             image = grey_to_rgb(image) if image.shape[2] == 1 else image
@@ -41,7 +40,8 @@ def csv_to_record(csv_file, tfrecord_file):
                     'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
                     'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                     'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                    'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
+                    'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw])),
+                    'filename': tf.train.Feature(bytes_list=tf.train.BytesList(value=[path]))
                 }))
 
             # use the proto object to serialize the example to a string
