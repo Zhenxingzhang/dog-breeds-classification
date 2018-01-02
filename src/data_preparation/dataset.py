@@ -99,7 +99,6 @@ def get_train_val_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_si
     return ds_iter_.get_next()
 
 
-
 def one_hot_label_encoder():
     dog_breeds_csv = pd.read_csv("./data/breeds.csv", dtype={'breed': np.str})
     lb = preprocessing.LabelBinarizer()
@@ -158,15 +157,19 @@ if __name__ == '__main__':
 
     with tf.Graph().as_default() as g, tf.Session().as_default() as sess:
         ds, filenames = images_dataset()
-        ds_iter = ds.shuffle(buffer_size=1000, seed=1).batch(10).make_initializable_iterator()
+        ds_iter = ds.batch(1).make_initializable_iterator()
         next_record = ds_iter.get_next()
 
-        sess.run(ds_iter.initializer, feed_dict={filenames: paths.TRAIN_TF_RECORDS})
+        sess.run(ds_iter.initializer, feed_dict={filenames: paths.VAL_TF_RECORDS})
 
-        train_batch = sess.run(next_record)
-        images = train_batch["image_resize"]
-        labels = train_batch["label"]
+        idx = 0
+        try:
+            while True:
+                batch_examples = sess.run(next_record)
+                images = batch_examples["image_resize"]
+                label = batch_examples["label"]
+                idx += 1
+                print(idx)
 
-        print(text_decoder(labels[5]))
-        plt.imshow(images[5, :, :, :])
-        plt.show()
+        except tf.errors.OutOfRangeError:
+            print('End of the dataset')
