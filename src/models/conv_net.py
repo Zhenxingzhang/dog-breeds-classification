@@ -59,6 +59,7 @@ def fc_layer(input_tensor, num_units, layer_name, keep_prob_tensor=None, act=tf.
             ndims = input_shape[-1].value
         else:
             raise RuntimeError('Strange input tensor shape: {}'.format(input_shape))
+        print(ndims)
         # This Variable will hold the state of the weights for the layer
         with tf.name_scope('weights'):
             weights = weight_variable([ndims, num_units])
@@ -105,9 +106,10 @@ def conv_pool_layer(input_tensor, filter_size, num_filters, layer_name, act=tf.n
         if pool:
             pooled_activations = max_pool_2x2(activations)
             # tf.summary.histogram(layer_name + '/pooled_activations', pooled_activations)
-
+            print(pooled_activations.shape)
             return pooled_activations
         else:
+            print(activations.shape)
             return activations
 
 
@@ -131,6 +133,6 @@ def conv_net(x_input, categories, keep_prob_=None):
 if __name__ == "__main__":
     x = tf.placeholder(tf.float32, shape=[None, 64, 64, 3])
 
-    logits = conv_net(x)
+    logits = conv_net(x, 120)
 
     print(logits.get_shape())

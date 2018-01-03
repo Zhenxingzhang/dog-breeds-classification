@@ -103,4 +103,3 @@ ENV/
 .idea/
 .DS_Store
 scm-source.json
-data/

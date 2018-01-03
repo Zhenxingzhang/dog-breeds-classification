@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import mnist_net
+from src.models import mnist_net, conv_net
 from src.common import consts
 import os
 import datetime
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = mnist_net.mnist_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
+    logits = conv_net.conv_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring
