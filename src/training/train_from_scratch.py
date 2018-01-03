@@ -8,7 +8,7 @@ import datetime
 
 if __name__ == "__main__":
     BATCH_SIZE = 128
-    NUM_STEPS = 30001
+    NUM_STEPS = 3000
     LEARNING_RATE = 1e-3
 
     with tf.name_scope("input"):
