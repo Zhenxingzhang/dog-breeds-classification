@@ -19,7 +19,7 @@ if __name__ == "__main__":
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = mnist_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
+    logits = mnist_net.mnist_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring

@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-
 from sklearn import preprocessing
 from src.common import consts
-from src.common import paths, consts
+from src.common import paths
 
 
 def get_int64_feature(example, name):
@@ -77,8 +76,9 @@ def read_image_record(record):
         image_shape = tf.stack([height_, width_, 3])
         image = tf.reshape(image, image_shape)
 
-        features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-            image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
+        # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
+        #     image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
+        features["image_resize"] = tf.image.resize_images(image, [consts.IMAGE_HEIGHT, consts.IMAGE_WIDTH])
     return features
 
 
