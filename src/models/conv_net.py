@@ -129,6 +129,14 @@ def conv_pool_layer(input_tensor, filter_size, num_filters, layer_name, act=tf.n
 #
 #     return logits_
 
+# Total Parameters:
+# 3x3x32 = 288
+# 3x3x16 = 144
+# 3x3x16 = 144
+# 3x3x16 = 144
+# 1024x128 = 131072
+# 256x120 = 30720
+# about 160,000 in total.
 
 def conv_net(x_input, categories, keep_prob_=None):
     x_input = tf.cast(x_input, tf.float32)
@@ -136,8 +144,9 @@ def conv_net(x_input, categories, keep_prob_=None):
     out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=32, layer_name='conv_poole_1')
     out_2 = conv_pool_layer(out_1, filter_size=3, num_filters=16, layer_name='conv_pool_2')
     out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_pool_3')
-    out_4 = fc_layer(out_3, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
-    logits_ = fc_layer(out_4, num_units=categories, layer_name='logits', act=tf.identity)
+    out_4 = conv_pool_layer(out_3, filter_size=3, num_filters=16, layer_name='conv_pool_4')
+    fc1 = fc_layer(out_4, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
+    logits_ = fc_layer(fc1, num_units=categories, layer_name='logits', act=tf.identity)
 
     return logits_
 
