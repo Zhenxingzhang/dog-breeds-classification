@@ -5,6 +5,8 @@ from sklearn import preprocessing
 from src.common import consts
 from src.common import paths
 
+IMAGE_HEIGHT = 384
+IMAGE_WIDTH = 384
 
 def get_int64_feature(example, name):
     return int(example.features.feature[name].int64_list.value[0])
@@ -78,7 +80,7 @@ def read_image_record(record):
 
         # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
         #     image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
-        features["image_resize"] = tf.image.resize_images(image, [consts.IMAGE_HEIGHT, consts.IMAGE_WIDTH])
+        features["image_resize"] = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
     return features
 
 
@@ -152,6 +154,9 @@ if __name__ == '__main__':
     #     print(features['label'])
     #     print(features['inception_output'].shape)
 
+    IMAGE_HEIGHT = 64
+    IMAGE_WIDTH = 64
+
     with tf.Graph().as_default() as g, tf.Session().as_default() as sess:
         ds, filenames = images_dataset()
         ds_iter = ds.batch(1).make_initializable_iterator()
@@ -161,11 +166,12 @@ if __name__ == '__main__':
 
         idx = 0
         try:
-            while True:
+            while idx < 10:
                 batch_examples = sess.run(next_record)
                 images = batch_examples["image_resize"]
                 label = batch_examples["label"]
                 idx += 1
+                print(images.shape)
 
         except tf.errors.OutOfRangeError:
             print('End of the dataset')
