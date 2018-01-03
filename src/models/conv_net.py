@@ -114,24 +114,36 @@ def conv_pool_layer(input_tensor, filter_size, num_filters, layer_name, act=tf.n
 
 
 # MODEL
+# def conv_net(x_input, categories, keep_prob_=None):
+#     x_input = tf.cast(x_input, tf.float32)
+#     x_input = (x_input - 128.0) / 128.0
+#     out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=16, layer_name='conv_1', pool=False)
+#     out_2 = conv_pool_layer(out_1, filter_size=3, num_filters=16, layer_name='conv_pool_2')
+#     out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_pool_3')
+#     out_4 = conv_pool_layer(out_3, filter_size=3, num_filters=32, layer_name='conv_pool_4')
+#     out_5 = conv_pool_layer(out_4, filter_size=3, num_filters=32, layer_name='conv_pool_5')
+#     out_6 = conv_pool_layer(out_5, filter_size=3, num_filters=64, layer_name='conv_6', pool=False)
+#     out_7 = fc_layer(out_6, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
+#     out_8 = fc_layer(out_7, num_units=256, layer_name='FC_2', keep_prob_tensor=keep_prob_)
+#     logits_ = fc_layer(out_8, num_units=categories, layer_name='logits', act=tf.identity)
+#
+#     return logits_
+
+
 def conv_net(x_input, categories, keep_prob_=None):
     x_input = tf.cast(x_input, tf.float32)
     x_input = (x_input - 128.0) / 128.0
-    out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=16, layer_name='conv_1', pool=False)
+    out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=32, layer_name='conv_poole_1')
     out_2 = conv_pool_layer(out_1, filter_size=3, num_filters=16, layer_name='conv_pool_2')
-    out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_3', pool=False)
-    out_4 = conv_pool_layer(out_3, filter_size=3, num_filters=32, layer_name='conv_pool_4')
-    out_5 = conv_pool_layer(out_4, filter_size=3, num_filters=32, layer_name='conv_pool_5')
-    out_6 = conv_pool_layer(out_5, filter_size=3, num_filters=64, layer_name='conv_pool_6')
-    out_7 = fc_layer(out_6, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
-    out_8 = fc_layer(out_7, num_units=256, layer_name='FC_2', keep_prob_tensor=keep_prob_)
-    logits_ = fc_layer(out_8, num_units=categories, layer_name='logits', act=tf.identity)
+    out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_pool_3')
+    out_4 = fc_layer(out_3, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
+    logits_ = fc_layer(out_4, num_units=categories, layer_name='logits', act=tf.identity)
 
     return logits_
 
 
 if __name__ == "__main__":
-    x = tf.placeholder(tf.float32, shape=[None, 64, 64, 3])
+    x = tf.placeholder(tf.float32, shape=[None, 128, 128, 3])
 
     logits = conv_net(x, 120)
 
