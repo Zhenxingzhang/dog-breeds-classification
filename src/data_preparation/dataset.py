@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from sklearn import preprocessing
 from src.common import consts
-from src.common import paths
+from src.common import paths, consts
 
 
 def get_int64_feature(example, name):
@@ -59,9 +59,6 @@ def test_features_dataset():
 
 
 def read_image_record(record):
-    IMAGE_HEIGHT = 384
-    IMAGE_WIDTH = 384
-
     features = tf.parse_single_example(
         record,
         features={
@@ -81,7 +78,7 @@ def read_image_record(record):
         image = tf.reshape(image, image_shape)
 
         features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-            image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
+            image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
     return features
 
 

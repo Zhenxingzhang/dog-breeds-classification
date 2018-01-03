@@ -1,7 +1,8 @@
 import tensorflow as tf
-from src.models.conv_net import conv_net
 from src.common import paths
 from src.data_preparation import dataset
+from src.models import mnist_net
+from src.common import consts
 import os
 import datetime
 
@@ -10,19 +11,15 @@ if __name__ == "__main__":
     NUM_STEPS = 30001
     LEARNING_RATE = 1e-3
 
-    IMAGE_HEIGHT = 384
-    IMAGE_WIDTH = 384
-    CLASS_NUMBER = 120
-
     with tf.name_scope("input"):
-        input_images = tf.placeholder(tf.float32, shape=[None, IMAGE_HEIGHT, IMAGE_WIDTH, 3])
+        input_images = tf.placeholder(tf.float32, shape=[None, consts.IMAGE_HEIGHT, consts.IMAGE_WIDTH, 3])
         label = tf.placeholder(tf.int64)
         input_images_summary = tf.summary.image('images', input_images)
 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = conv_net(input_images, CLASS_NUMBER, keep_prob_tensor)
+    logits = mnist_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring

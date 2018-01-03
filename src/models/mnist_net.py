@@ -30,12 +30,12 @@ def mnist_net(x_input, classes, dropout_keep_prob):
       activation=tf.nn.relu)
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
-    # print(pool2.shape)
+    print(pool2.shape)
 
-    # Convolutional Layer #2 and Pooling Layer #2
+    # Convolutional Layer #3 and Pooling Layer #3
     conv3 = tf.layers.conv2d(
       inputs=pool2,
-      filters=32,
+      filters=64,
       kernel_size=[3, 3],
       padding="same",
       activation=tf.nn.relu)
@@ -48,8 +48,8 @@ def mnist_net(x_input, classes, dropout_keep_prob):
     ndims = np.int(np.product(input_shape[1:]))
     print(ndims)
 
-    pool2_flat = tf.reshape(pool2, [-1, ndims])
-    dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+    pool3_flat = tf.reshape(pool3, [-1, ndims])
+    dense = tf.layers.dense(inputs=pool3_flat, units=1024, activation=tf.nn.relu)
     dropout = tf.layers.dropout(inputs=dense, rate=dropout_keep_prob)
 
     # Logits Layer
@@ -58,6 +58,6 @@ def mnist_net(x_input, classes, dropout_keep_prob):
 
 
 if __name__ == "__main__":
-    x = tf.placeholder(tf.float32, [None, 120, 120, 3])
+    x = tf.placeholder(tf.float32, [None, 64, 64, 3])
     keep_prob = tf.placeholder(tf.float32)
     logits = mnist_net(x, 120, keep_prob)

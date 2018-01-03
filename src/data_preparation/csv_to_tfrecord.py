@@ -40,8 +40,7 @@ def csv_to_record(csv_file, tfrecord_file):
                     'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
                     'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                     'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                    'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw])),
-                    'filename': tf.train.Feature(bytes_list=tf.train.BytesList(value=[path]))
+                    'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
                 }))
 
             # use the proto object to serialize the example to a string
