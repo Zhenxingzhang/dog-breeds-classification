@@ -38,7 +38,7 @@ def csv_to_record(csv_file, tfrecord_file, is_train=True):
                 example = tf.train.Example(
                     # Example contains a Features proto object
                     features=tf.train.Features(feature={
-                        'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
+                        'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)])),
                         'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                         'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
                         'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
@@ -47,7 +47,7 @@ def csv_to_record(csv_file, tfrecord_file, is_train=True):
                 example = tf.train.Example(
                     # Example contains a Features proto object
                     features=tf.train.Features(feature={
-                        'id': tf.train.Feature(bytes_list=tf.train.BytesList(value=[label])),
+                        'id': tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(label)])),
                         'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                         'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
                         'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
@@ -91,10 +91,3 @@ if __name__ == '__main__':
     else:
         print('TFRecord exists, nothing to do: {}'.format(test_tfrecord))
 
-    PLOT = 10  # number of images to plot (set == None to suppress plotting)
-
-    # read from record one at time
-    print('Reading from record one at a time')
-    # val_tfrecord_file = os.path.join(DATA_PATH, "train.tfrecord")
-    # read_from_record(val_tfrecord_file, shapes={'label': 1, 'image': (64, 64, 3)},
-    #                  plot=PLOT)
