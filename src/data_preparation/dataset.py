@@ -80,10 +80,12 @@ def read_train_image_record(record):
         image = tf.reshape(image, image_shape)
 
         # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-        #     image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
-        aug_image = tf.image.resize_images(image, [IMAGE_HEIGHT+12, IMAGE_WIDTH+12])
-        # aug_image = tf.random_crop(aug_image, np.array([IMAGE_HEIGHT, IMAGE_WIDTH, 3]))
-        # aug_image = tf.image.random_flip_left_right(aug_image)
+        #     image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
+        aug_image = tf.cast(
+            tf.image.resize_images(
+                image, [IMAGE_HEIGHT + int(IMAGE_HEIGHT/5), IMAGE_WIDTH+int(IMAGE_WIDTH/5)]), tf.uint8)
+        aug_image = tf.random_crop(aug_image, np.array([IMAGE_HEIGHT, IMAGE_WIDTH, 3]))
+        aug_image = tf.image.random_flip_left_right(aug_image)
         # aug_image = tf.image.random_hue(aug_image, 0.05)
         # aug_image = tf.image.random_saturation(aug_image, 0.5, 2.0)
         features["image_resize"] = aug_image
@@ -125,9 +127,9 @@ def read_test_image_record(record):
         image_shape = tf.stack([height_, width_, 3])
         image = tf.reshape(image, image_shape)
 
-        # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-        #     image=image, target_height=consts.IMAGE_HEIGHT, target_width=consts.IMAGE_WIDTH)
-        features["image_resize"] = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
+        features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
+            image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
+        # features["image_resize"] = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
     return features
 
 
@@ -205,14 +207,14 @@ if __name__ == '__main__':
     IMAGE_WIDTH = 128
 
     with tf.Graph().as_default() as g, tf.Session().as_default() as sess:
-        ds, filenames = test_images_dataset()
+        ds, filenames = train_images_dataset()
         ds_iter = ds.batch(10).make_initializable_iterator()
         next_record = ds_iter.get_next()
 
-        sess.run(ds_iter.initializer, feed_dict={filenames: paths.TEST_TF_RECORDS})
+        sess.run(ds_iter.initializer, feed_dict={filenames: paths.VAL_TF_RECORDS})
         batch_examples = sess.run(next_record)
         images = batch_examples["image_resize"]
-        label = batch_examples["id"]
+        label = batch_examples["label"]
 
         print(images.shape)
 
