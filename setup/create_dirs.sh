@@ -13,6 +13,10 @@ mkdir -p /data/dog_breeds/stanford_ds
 mkdir -p /data/dog_breeds/stanford_ds/train
 mkdir -p /data/dog_breeds/stanford_ds/val
 mkdir -p /data/dog_breeds/stanford_ds/test
+
+mkdir -p /data/dog_breeds/kaggle
+mkdir -p /data/dog_breeds/kaggle/test
+
 mkdir -p /data/checkpoints/dog_breeds
 mkdir -p /data/frozen/dog_breeds
 mkdir -p /data/graphs/dog_breeds

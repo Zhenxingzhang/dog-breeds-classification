@@ -1,14 +1,10 @@
-"""
-Restores variable values from previously trained MNIST ConvNet model, re runs
-inference process and evaluates accuracy against test data
-"""
-
-from src.common import paths
 import tensorflow as tf
 import argparse
 import os
 import yaml
+import numpy as np
 
+from src.common import paths
 from src.models import conv_net
 from src.data_preparation import dataset
 
@@ -31,12 +27,15 @@ def main(model_name, l_rate, input_h, input_w, test_bz, categories, output_path)
         keep_prob_tensor = tf.placeholder(tf.float32)
 
     logits = conv_net.conv_net_small(input_images, categories, keep_prob_tensor)
-    prediction = tf.argmax(logits, 1)
+    probability = tf.contrib.layers.softmax(logits)
+
     # Add ops to restore values of the variables created from forward pass
     # from checkpoints
     saver = tf.train.Saver(tf.trainable_variables())
 
     test_tfrecord_file = paths.TEST_TF_RECORDS
+
+    breeds = decoder(np.identity(categories))
 
     # Start session
     with tf.Session() as sess:
@@ -49,18 +48,20 @@ def main(model_name, l_rate, input_h, input_w, test_bz, categories, output_path)
         print("Restoring Saved Variables from Checkpoint: {}".format(latest_checkpoint))
         saver.restore(sess, latest_checkpoint)
 
-        with open(os.path.join(paths.OUTPUT_PATH, "prediction.txt"), "w") as output:
+        output_csv = os.path.join(output_path, "prediction.txt")
+        print("Write results to: {}".format(output_csv))
+        with open(output_csv, "w") as output:
+            output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
             try:
-                while True:
-                    test_batch_examples = sess.run(next_test_batch)
-                    test_images = test_batch_examples["image_shape"]
-                    test_filename = test_batch_examples["filename"]
+                # while True:
+                test_batch_examples = sess.run(next_test_batch)
+                test_images = test_batch_examples["image_resize"]
+                test_ids = test_batch_examples["id"]
 
-                    prediction_ = sess.run(prediction, {input_images: test_images, keep_prob_tensor: 1.0})
-                    pred_label = decoder(prediction_)
+                prediction_ = sess.run(probability, {input_images: test_images, keep_prob_tensor: 1.0})
 
-                    for (p_label, filename) in zip(pred_label, test_filename):
-                        output.writelines("{} {}\n".format(filename, p_label))
+                for (prob_list, id_) in zip(prediction_, test_ids):
+                    output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))
 
             except tf.errors.OutOfRangeError:
                 print('End of the dataset')
@@ -83,7 +84,9 @@ if __name__ == '__main__':
     TRAIN_LEARNING_RATE = float(cfg["TRAIN"]["LEARNING_RATE"])
 
     TEST_BATCH_SIZE = cfg["TEST"]["BATCH_SIZE"]
-    OUTPUT_PATH = str(cfg["TEST"]["OUTPUT_PATH"])
+    OUTPUT_PATH = os.path.join(str(cfg["TEST"]["OUTPUT_PATH"]), MODEL_NAME)
+    if not os.path.exists(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
 
     # tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
     main(MODEL_NAME, TRAIN_LEARNING_RATE, INPUT_HEIGHT, INPUT_WIDTH, TEST_BATCH_SIZE, CATEGORIES, OUTPUT_PATH)

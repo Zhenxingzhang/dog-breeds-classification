@@ -14,7 +14,7 @@ def grey_to_rgb(im):
     return ret
 
 
-def csv_to_record(csv_file, tfrecord_file):
+def csv_to_record(csv_file, tfrecord_file, is_train=True):
     with open(csv_file) as f:
         lines = f.readlines()
         np.random.shuffle(lines)
@@ -31,17 +31,27 @@ def csv_to_record(csv_file, tfrecord_file):
             image_raw = image.tostring()
 
             text_label = re.sub(r"[\n\t\s]*", "", line.split(',')[1])
-            label = -1 if (text_label == '' or text_label is None) else int(text_label)
+            label = -1 if (text_label == '' or text_label is None) else text_label
 
             # construct the Example proto object
-            example = tf.train.Example(
-                # Example contains a Features proto object
-                features=tf.train.Features(feature={
-                    'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
-                    'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
-                    'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
-                    'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
-                }))
+            if is_train:
+                example = tf.train.Example(
+                    # Example contains a Features proto object
+                    features=tf.train.Features(feature={
+                        'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[label])),
+                        'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
+                        'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
+                        'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
+                    }))
+            else:
+                example = tf.train.Example(
+                    # Example contains a Features proto object
+                    features=tf.train.Features(feature={
+                        'id': tf.train.Feature(bytes_list=tf.train.BytesList(value=[label])),
+                        'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
+                        'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
+                        'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
+                    }))
 
             # use the proto object to serialize the example to a string
             serialized = example.SerializeToString()
@@ -60,6 +70,9 @@ if __name__ == '__main__':
     val_csv = paths.VAL_CSV_FILE
     val_tfrecord = paths.VAL_TF_RECORDS
 
+    test_csv = paths.TEST_CSV_RECORDS
+    test_tfrecord = paths.TEST_TF_RECORDS
+
     if not os.path.exists(train_tfrecord):
         print('Creating TFRecord from csv files for set: {}'.format('train'))
         csv_to_record(train_csv, train_tfrecord)
@@ -71,6 +84,12 @@ if __name__ == '__main__':
         csv_to_record(val_csv, val_tfrecord)
     else:
         print('TFRecord exists, nothing to do: {}'.format(val_tfrecord))
+
+    if not os.path.exists(test_tfrecord):
+        print('Creating TFRecord from csv files for set: {}'.format('test'))
+        csv_to_record(test_csv, test_tfrecord, False)
+    else:
+        print('TFRecord exists, nothing to do: {}'.format(test_tfrecord))
 
     PLOT = 10  # number of images to plot (set == None to suppress plotting)
 

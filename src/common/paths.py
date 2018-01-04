@@ -17,7 +17,12 @@ VAL_SUMMARY_DIR = "/data/summary/dog_breeds/val"
 
 CHECKPOINTS_DIR = '/data/checkpoints/dog_breeds'
 
-TEST_TF_RECORDS = os.path.join(DATA_ROOT, 'dogs_test.tfrecords')
+KAGGLE_DATA_DIR = "/data/dog_breeds/kaggle"
+
+TEST_CSV_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.csv')
+TEST_TF_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.tfrecords')
+
+
 # LABELS = os.path.join(DATA_ROOT, 'train', 'labels.csv')
 # IMAGENET_GRAPH_DEF = '/data/frozen/inception/classify_image_graph_def.pb'
 # TEST_PREDICTIONS = '/data/outputs/dog_breeds/predictions.csv'

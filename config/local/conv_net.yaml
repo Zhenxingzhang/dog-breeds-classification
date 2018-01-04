@@ -17,6 +17,6 @@ VAL:
 
 
 TEST:
-    BATCH_SIZE : 20000
+    BATCH_SIZE : 20
     TF_RECORDS : ""
-    OUTPUT_PATH : "/data/outputs/LR-Inception-2016_predict.csv"
+    OUTPUT_PATH : "/data/outputs/dog_breeds"

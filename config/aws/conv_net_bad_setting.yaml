@@ -19,4 +19,4 @@ VAL:
 TEST:
     BATCH_SIZE : 200
     TF_RECORDS : ""
-    OUTPUT_CSV_PATH : "/data/outputs/"
+    OUTPUT_CSV_PATH : "/data/outputs/dog_breeds"
