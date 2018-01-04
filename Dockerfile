@@ -33,6 +33,7 @@ COPY ./images /app/images
 COPY ./data/breeds.csv /app/data/breeds.csv
 COPY ./notebooks/*.ipynb /app/notebooks/
 COPY ./setup /app/setup
+COPY ./config /app/config
 
 #CMD [ "jupyter", "notebook", "--allow-root"]
 CMD ["/run_tools.sh", "--allow-root"]
