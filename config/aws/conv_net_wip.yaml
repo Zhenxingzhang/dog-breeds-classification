@@ -1,5 +1,5 @@
 MODEL:
-    MODEL_NAME : "conv_net_scratch_wip"
+    MODEL_NAME : "small_conv_net"
     INPUT_HEIGHT: 128
     INPUT_WIDTH: 128
 
@@ -7,15 +7,15 @@ TRAIN:
     BATCH_SIZE : 64
     EPOCHS_COUNT : 10000
     LEARNING_RATE : 0.001
-    KEEP_PROB : 1.0
-    TF_RECORDS : "/data/data/train/train_300k.tfrecord"
+    KEEP_PROB : 0.2
+    TF_RECORDS : ""
 
 VAL:
     BATCH_SIZE : 100
-    TF_RECORDS : "/data/data/train_example.tfrecord"
+    TF_RECORDS : ""
 
 
 TEST:
     BATCH_SIZE : 20000
-    TEST_TF_RECORDS : "/data/data/test/tf_records/"
-    OUTPUT_CSV_PATH : "/data/outputs/LR-Inception-2016_predict.csv"
+    TF_RECORDS : ""
+    OUTPUT_PATH : "/data/outputs/dog_breeds"

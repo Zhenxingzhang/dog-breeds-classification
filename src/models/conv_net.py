@@ -115,6 +115,15 @@ def conv_pool_layer(input_tensor, filter_size, num_filters, layer_name, act=tf.n
 
 # MODEL
 def conv_net(x_input, categories, keep_prob_=None):
+    """
+    3x3x16
+    3x3x16
+    3x3x16
+    3x3x32
+    3x3x64
+
+
+    """
     x_input = tf.cast(x_input, tf.float32)
     x_input = (x_input - 128.0) / 128.0
     out_1 = conv_pool_layer(x_input, filter_size=3, num_filters=16, layer_name='conv_1', pool=False)

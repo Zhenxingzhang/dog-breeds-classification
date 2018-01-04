@@ -2,20 +2,21 @@ MODEL:
     MODEL_NAME : "conv_net_scratch_not_working"
     INPUT_HEIGHT: 384
     INPUT_WIDTH: 384
+    CLASSES: 120
 
 TRAIN:
     BATCH_SIZE : 128
     EPOCHS_COUNT : 3000
     LEARNING_RATE : 0.001
     KEEP_PROB : 1.0
-    TF_RECORDS : "/data/data/train/train_300k.tfrecord"
+    TF_RECORDS : ""
 
 VAL:
     BATCH_SIZE : 128
-    TF_RECORDS : "/data/data/train_example.tfrecord"
+    TF_RECORDS : ""
 
 
 TEST:
-    BATCH_SIZE : 20000
-    TEST_TF_RECORDS : "/data/data/test/tf_records/"
-    OUTPUT_CSV_PATH : "/data/outputs/LR-Inception-2016_predict.csv"
+    BATCH_SIZE : 200
+    TF_RECORDS : ""
+    OUTPUT_CSV_PATH : "/data/outputs/"

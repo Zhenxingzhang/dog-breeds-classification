@@ -1,0 +1,22 @@
+MODEL:
+    MODEL_NAME : "conv_net_local"
+    INPUT_HEIGHT: 98
+    INPUT_WIDTH: 98
+    CLASSES: 120
+
+TRAIN:
+    BATCH_SIZE : 12
+    EPOCHS_COUNT : 30
+    LEARNING_RATE : 0.01
+    KEEP_PROB : 0.2
+    TF_RECORDS : ""
+
+VAL:
+    BATCH_SIZE : 10
+    TF_RECORDS : ""
+
+
+TEST:
+    BATCH_SIZE : 20000
+    TF_RECORDS : ""
+    OUTPUT_PATH : "/data/outputs/LR-Inception-2016_predict.csv"
