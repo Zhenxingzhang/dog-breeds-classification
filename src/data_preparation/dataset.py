@@ -8,6 +8,7 @@ from src.common import paths
 IMAGE_HEIGHT = 384
 IMAGE_WIDTH = 384
 
+
 def get_int64_feature(example, name):
     return int(example.features.feature[name].int64_list.value[0])
 

@@ -1,12 +1,13 @@
 MODEL:
-    MODEL_NAME : "conv_net_scratch_not_working"
-    INPUT_HEIGHT: 384
-    INPUT_WIDTH: 384
+    MODEL_NAME : "conv_net_scratch_wip"
+    INPUT_HEIGHT: 128
+    INPUT_WIDTH: 128
 
 TRAIN:
     BATCH_SIZE : 64
     EPOCHS_COUNT : 10000
     LEARNING_RATE : 0.001
+    KEEP_PROB : 1.0
     TF_RECORDS : "/data/data/train/train_300k.tfrecord"
 
 VAL:

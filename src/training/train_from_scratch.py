@@ -11,15 +11,19 @@ if __name__ == "__main__":
     NUM_STEPS = 3000
     LEARNING_RATE = 1e-3
 
+    dataset.IMAGE_HEIGHT = 384
+    dataset.IMAGE_WIDTH = 384
+    CLASSES_COUNT = 120
+
     with tf.name_scope("input"):
-        input_images = tf.placeholder(tf.float32, shape=[None, consts.IMAGE_HEIGHT, consts.IMAGE_WIDTH, 3])
+        input_images = tf.placeholder(tf.float32, shape=[None, dataset.IMAGE_HEIGHT, dataset.IMAGE_WIDTH, 3])
         label = tf.placeholder(tf.int64)
         input_images_summary = tf.summary.image('images', input_images)
 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = conv_net.conv_net(input_images, consts.CLASSES_COUNT, keep_prob_tensor)
+    logits = conv_net.conv_net(input_images, CLASSES_COUNT, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring
