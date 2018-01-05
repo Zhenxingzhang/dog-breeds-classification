@@ -53,8 +53,8 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     val_tfrecord_file = paths.VAL_TF_RECORDS
 
     with tf.Session() as sess:
-        next_train_batch = dataset.get_train_val_data_iter(sess, [train_tfrecord_file], batch_size=train_bz)
-        next_val_batch = dataset.get_train_val_data_iter(sess, [val_tfrecord_file], batch_size=val_bz)
+        next_train_batch = dataset.get_train_data_iter(sess, [train_tfrecord_file], batch_size=train_bz)
+        next_val_batch = dataset.get_val_data_iter(sess, [val_tfrecord_file], batch_size=val_bz)
 
         sess.run(tf.global_variables_initializer())
 
