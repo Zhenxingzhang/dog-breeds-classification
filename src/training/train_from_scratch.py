@@ -21,7 +21,7 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = vgg_16.vgg_16(input_images, categories, keep_prob_tensor)
+    logits = mnist_net.mnist_net(input_images, categories, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring
