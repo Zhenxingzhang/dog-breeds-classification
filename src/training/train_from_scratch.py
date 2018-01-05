@@ -37,7 +37,12 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', accuracy)
 
-    train_op = tf.train.AdamOptimizer(l_rate).minimize(loss_mean)
+    global_step = tf.Variable(0, trainable=False)
+
+    learning_rate = tf.train.exponential_decay(l_rate, global_step,
+                                               3, 0.9, staircase=True)
+
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss_mean, global_step=global_step)
 
     summary_op = tf.summary.merge_all()
 
@@ -75,12 +80,12 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
             train_images = train_batch_examples["image_resize"]
             train_labels = train_batch_examples["label"]
 
-            _, step_loss, step_summary = sess.run([train_op, loss_mean, summary_op],
+            lr, _, step_loss, step_summary = sess.run([learning_rate, train_op, loss_mean, summary_op],
                                                   feed_dict={input_images: train_images,
                                                              label: train_labels,
                                                              keep_prob_tensor: keep_prob_rate})
             train_writer.add_summary(step_summary, i)
-            print("Step {}, train loss: {}".format(i, step_loss))
+            print("Step {}, lr:{},  train loss: {}".format(i, lr, step_loss))
 
             if i % 10 == 0:
                 saver.save(sess, os.path.join(checkpoint_dir, "model.ckpt"))

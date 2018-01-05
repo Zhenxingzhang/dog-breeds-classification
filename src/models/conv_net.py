@@ -156,8 +156,9 @@ def conv_net_small(x_input, categories, keep_prob_=None):
     out_2 = conv_pool_layer(out_1, filter_size=3, num_filters=16, layer_name='conv_pool_2')
     out_3 = conv_pool_layer(out_2, filter_size=3, num_filters=16, layer_name='conv_pool_3')
     out_4 = conv_pool_layer(out_3, filter_size=3, num_filters=16, layer_name='conv_pool_4')
-    fc1 = fc_layer(out_4, num_units=128, layer_name='FC_1', keep_prob_tensor=keep_prob_)
-    logits_ = fc_layer(fc1, num_units=categories, layer_name='logits', act=tf.identity)
+    fc1 = fc_layer(out_4, num_units=256, layer_name='FC_1', keep_prob_tensor=keep_prob_)
+    fc2 = fc_layer(fc1, num_units=128, layer_name='FC_2', keep_prob_tensor=keep_prob_)
+    logits_ = fc_layer(fc2, num_units=categories, layer_name='logits', act=tf.identity)
 
     return logits_
 
