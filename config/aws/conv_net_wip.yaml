@@ -2,12 +2,13 @@ MODEL:
     MODEL_NAME : "small_conv_net"
     INPUT_HEIGHT: 128
     INPUT_WIDTH: 128
+    CLASSES: 120
 
 TRAIN:
     BATCH_SIZE : 64
     EPOCHS_COUNT : 10000
     LEARNING_RATE : 0.001
-    KEEP_PROB : 0.2
+    KEEP_PROB : 0.5
     TF_RECORDS : ""
 
 VAL:
@@ -16,6 +17,6 @@ VAL:
 
 
 TEST:
-    BATCH_SIZE : 20000
+    BATCH_SIZE : 500
     TF_RECORDS : ""
     OUTPUT_PATH : "/data/outputs/dog_breeds"
