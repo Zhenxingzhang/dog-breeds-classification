@@ -81,13 +81,13 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
             train_labels = train_batch_examples["label"]
 
             lr, _, step_loss, step_summary = sess.run([learning_rate, train_op, loss_mean, summary_op],
-                                                  feed_dict={input_images: train_images,
-                                                             label: train_labels,
-                                                             keep_prob_tensor: keep_prob_rate})
+                                                      feed_dict={input_images: train_images,
+                                                                 label: train_labels,
+                                                                 keep_prob_tensor: keep_prob_rate})
             train_writer.add_summary(step_summary, i)
             print("Step {}, lr:{},  train loss: {}".format(i, lr, step_loss))
 
-            if i % 10 == 0:
+            if i % 100 == 0:
                 saver.save(sess, os.path.join(checkpoint_dir, "model.ckpt"))
 
                 val_batch_examples = sess.run(next_val_batch)
