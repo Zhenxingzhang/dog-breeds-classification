@@ -56,6 +56,7 @@ def infer_test(model_name, output_probs, x):
 
         print('predictions saved to %s' % paths.TEST_PREDICTIONS)
 
+
 if __name__ == '__main__':
     with tf.Graph().as_default():
         x = tf.placeholder(dtype=tf.float32, shape=(consts.INCEPTION_CLASSES_COUNT, None), name="x")

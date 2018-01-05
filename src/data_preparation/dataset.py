@@ -182,9 +182,9 @@ def test_images_dataset():
     return ds_, filenames_
 
 
-def get_test_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
+def get_test_data_iter(sess_, tf_records_paths_, batch_size=64):
     ds_, file_names_ = test_images_dataset()
-    ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
+    ds_iter_ = ds_.batch(batch_size).make_initializable_iterator()
     sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
     return ds_iter_.get_next()
 
