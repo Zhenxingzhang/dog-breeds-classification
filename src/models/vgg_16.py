@@ -19,7 +19,8 @@ layers.
 """
 import tensorflow as tf
 import numpy as np
-import scipy
+import scipy.misc
+
 
 def conv_2d(inputs, filters, kernel_size, name=None):
     """3x3 conv layer: ReLU + (1, 1) stride + He initialization"""
@@ -119,12 +120,15 @@ def vgg_16(training_batch, classes, dropout_keep_prob):
 
 
 if __name__ == "__main__":
+    height = 128
+    width = 128
+
     image = np.array(scipy.misc.imread("./images/airedale.jpg", flatten=False, mode='RGB'))
 
-    image_batch = np.zeros([1, 224, 224, 3])
-    image_batch[0, :, :, :] = image[:224, :224, :3]
+    image_batch = np.zeros([1, height, width, 3])
+    image_batch[0, :, :, :] = image[:height, :width, :3]
 
-    x = tf.placeholder(tf.float32, shape=[None, 224, 224, 3])
+    x = tf.placeholder(tf.float32, shape=[None, height, width, 3])
     keep_prob = tf.placeholder(tf.float32)
 
     logits = vgg_16(x, 120, keep_prob)

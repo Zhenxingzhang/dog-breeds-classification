@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import mnist_net, conv_net
+from src.models import mnist_net, conv_net, vgg_16
 import yaml
 import os
 import datetime
@@ -21,7 +21,7 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = conv_net.conv_net_small(input_images, categories, keep_prob_tensor)
+    logits = vgg_16.vgg_16(input_images, categories, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring
