@@ -100,8 +100,50 @@ def train_images_dataset():
     return ds_, filenames_
 
 
-def get_train_val_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
+def get_train_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
     ds_, file_names_ = train_images_dataset()
+    ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
+    sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
+    return ds_iter_.get_next()
+
+
+def read_val_image_record(record):
+    with tf.device('/cpu:0'):
+
+        features = tf.parse_single_example(
+            record,
+            features={
+                'label': tf.FixedLenFeature([], tf.int64),
+                'width': tf.FixedLenFeature([], tf.int64),
+                'height': tf.FixedLenFeature([], tf.int64),
+                'image': tf.FixedLenFeature([], tf.string)
+            })
+
+        image = tf.decode_raw(features['image'], tf.uint8)
+        height_ = tf.cast(features['height'], tf.int32)
+        width_ = tf.cast(features['width'], tf.int32)
+        image_shape = tf.stack([height_, width_, 3])
+        image = tf.reshape(image, image_shape)
+
+        # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
+        #     image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
+        aug_image = tf.cast(
+            tf.image.resize_images(
+                image, [IMAGE_HEIGHT, IMAGE_WIDTH]), tf.uint8)
+        features["image_resize"] = aug_image
+
+    return features
+
+
+def val_images_dataset():
+    filenames_ = tf.placeholder(tf.string)
+    ds_ = tf.contrib.data.TFRecordDataset(filenames_, compression_type='').map(read_val_image_record)
+
+    return ds_, filenames_
+
+
+def get_val_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
+    ds_, file_names_ = val_images_dataset()
     ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
     sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
     return ds_iter_.get_next()
@@ -140,9 +182,9 @@ def test_images_dataset():
     return ds_, filenames_
 
 
-def get_test_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
+def get_test_data_iter(sess_, tf_records_paths_, batch_size=64):
     ds_, file_names_ = test_images_dataset()
-    ds_iter_ = ds_.shuffle(buffer_size).batch(batch_size).make_initializable_iterator()
+    ds_iter_ = ds_.batch(batch_size).make_initializable_iterator()
     sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
     return ds_iter_.get_next()
 

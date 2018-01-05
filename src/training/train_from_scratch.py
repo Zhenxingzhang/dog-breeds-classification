@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import mnist_net, conv_net
+from src.models import mnist_net, conv_net, vgg_16
 import yaml
 import os
 import datetime
@@ -21,7 +21,7 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = conv_net.conv_net_small(input_images, categories, keep_prob_tensor)
+    logits = vgg_16.vgg_16(input_images, categories, keep_prob_tensor)
 
     print(logits.shape)
     # for monitoring
@@ -37,7 +37,12 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         tf.summary.scalar('accuracy', accuracy)
 
-    train_op = tf.train.AdamOptimizer(l_rate).minimize(loss_mean)
+    global_step = tf.Variable(0, trainable=False)
+
+    learning_rate = tf.train.exponential_decay(l_rate, global_step,
+                                               1000, 0.95, staircase=True)
+
+    train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss_mean, global_step=global_step)
 
     summary_op = tf.summary.merge_all()
 
@@ -48,8 +53,8 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     val_tfrecord_file = paths.VAL_TF_RECORDS
 
     with tf.Session() as sess:
-        next_train_batch = dataset.get_train_val_data_iter(sess, [train_tfrecord_file], batch_size=train_bz)
-        next_val_batch = dataset.get_train_val_data_iter(sess, [val_tfrecord_file], batch_size=val_bz)
+        next_train_batch = dataset.get_train_data_iter(sess, [train_tfrecord_file], batch_size=train_bz)
+        next_val_batch = dataset.get_val_data_iter(sess, [val_tfrecord_file], batch_size=val_bz)
 
         sess.run(tf.global_variables_initializer())
 
@@ -75,14 +80,14 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
             train_images = train_batch_examples["image_resize"]
             train_labels = train_batch_examples["label"]
 
-            _, step_loss, step_summary = sess.run([train_op, loss_mean, summary_op],
-                                                  feed_dict={input_images: train_images,
-                                                             label: train_labels,
-                                                             keep_prob_tensor: keep_prob_rate})
+            lr, _, step_loss, step_summary = sess.run([learning_rate, train_op, loss_mean, summary_op],
+                                                      feed_dict={input_images: train_images,
+                                                                 label: train_labels,
+                                                                 keep_prob_tensor: keep_prob_rate})
             train_writer.add_summary(step_summary, i)
-            print("Step {}, train loss: {}".format(i, step_loss))
+            print("Step {}, lr:{},  train loss: {}".format(i, lr, step_loss))
 
-            if i % 10 == 0:
+            if i % 100 == 0:
                 saver.save(sess, os.path.join(checkpoint_dir, "model.ckpt"))
 
                 val_batch_examples = sess.run(next_val_batch)

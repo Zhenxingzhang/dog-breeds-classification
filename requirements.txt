@@ -1,10 +1,10 @@
 pandas
 numpy
 matplotlib
+Pillow
 pyprind
 scikit-learn
 scipy
 jupyter
-Pillow
 kaggle-cli
 tqdm

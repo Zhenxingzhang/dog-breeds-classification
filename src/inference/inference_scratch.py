@@ -53,6 +53,7 @@ def main(model_name, l_rate, input_h, input_w, test_bz, categories, output_path)
         with open(output_csv, "w") as output:
             output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
             try:
+                iter = 0
                 while True:
                     test_batch_examples = sess.run(next_test_batch)
                     test_images = test_batch_examples["image_resize"]
@@ -63,8 +64,13 @@ def main(model_name, l_rate, input_h, input_w, test_bz, categories, output_path)
                     for (prob_list, id_) in zip(prediction_, test_ids):
                         output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))
 
+                    iter += 1
+                    print("processing {} test records".format(iter * test_bz))
+
             except tf.errors.OutOfRangeError:
-                print('End of the dataset')
+                print('End of the data set')
+
+        print("Inference finished")
 
 
 if __name__ == '__main__':
