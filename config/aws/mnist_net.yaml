@@ -1,5 +1,9 @@
+# This is the model that overfitting.
+# Reach low loss in train but rather high loss in val.
+
 MODEL:
-    MODEL_NAME : "vgg_16_net"
+    MODEL_NAME : "mnist_net"
+    MODEL_ARCH: "mnist_net"
     INPUT_HEIGHT: 64
     INPUT_WIDTH: 64
     CLASSES: 120

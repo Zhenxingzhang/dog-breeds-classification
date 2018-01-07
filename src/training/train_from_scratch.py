@@ -1,14 +1,14 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import mnist_net, conv_net, vgg_16
+from src.models import model
 import yaml
 import os
 import datetime
 import argparse
 
 
-def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, input_w, categories):
+def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, input_w, categories):
 
     dataset.IMAGE_HEIGHT = input_h
     dataset.IMAGE_WIDTH = input_w
@@ -21,9 +21,13 @@ def train(model_name, train_bz, val_bz, keep_prob_rate, steps, l_rate, input_h, 
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = mnist_net.mnist_net(input_images, categories, keep_prob_tensor)
+    if model_arch == "mnist_net":
+        logits = model.mnist_net(input_images, categories, keep_prob_tensor)
+    elif model_arch == "conv_net":
+        logits = model.conv_net(input_images, categories, keep_prob_tensor)
+    else:
+        print("Model arch error!")
 
-    print(logits.shape)
     # for monitoring
     with tf.name_scope('loss'):
         loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=label, logits=logits)
@@ -115,6 +119,7 @@ if __name__ == "__main__":
         cfg = yaml.load(yml_file)
 
     MODEL_NAME = str(cfg["MODEL"]["MODEL_NAME"])
+    MODEL_ARCH = str(cfg["MODEL"]["MODEL_ARCH"])
     INPUT_HEIGHT = int(cfg["MODEL"]["INPUT_HEIGHT"])
     INPUT_WIDTH = int(cfg["MODEL"]["INPUT_WIDTH"])
     CATEGORIES = int(cfg["MODEL"]["CLASSES"])
@@ -128,7 +133,7 @@ if __name__ == "__main__":
     EVAL_BATCH_SIZE = cfg["TRAIN"]["BATCH_SIZE"]
     EVAL_TF_RECORDS = str(cfg["TRAIN"]["TF_RECORDS"])
 
-    train(MODEL_NAME, TRAIN_BATCH_SIZE, EVAL_BATCH_SIZE, TRAIN_KEEP_PROB, TRAIN_STEPS_COUNT,
+    train(MODEL_NAME, MODEL_ARCH, TRAIN_BATCH_SIZE, EVAL_BATCH_SIZE, TRAIN_KEEP_PROB, TRAIN_STEPS_COUNT,
           TRAIN_LEARNING_RATE, INPUT_HEIGHT, INPUT_WIDTH, CATEGORIES)
 
 
