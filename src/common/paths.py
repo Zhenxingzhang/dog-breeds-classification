@@ -15,7 +15,7 @@ VAL_TF_RECORDS = os.path.join(VAL_DIR, 'val.tfrecord')
 TRAIN_SUMMARY_DIR = "/data/summary/dog_breeds/train"
 VAL_SUMMARY_DIR = "/data/summary/dog_breeds/val"
 
-CHECKPOINTS_DIR = '/data/checkpoints/dog_breeds'
+CHECKPOINT_DIR = '/data/checkpoints/dog_breeds'
 
 KAGGLE_DATA_DIR = "/data/dog_breeds/kaggle"
 

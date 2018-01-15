@@ -25,8 +25,11 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
         logits = model.mnist_net(input_images, categories, keep_prob_tensor)
     elif model_arch == "conv_net":
         logits = model.conv_net(input_images, categories, keep_prob_tensor)
+    elif model_arch == "vgg_16":
+        logits = model.vgg_16(input_images, categories, keep_prob_tensor)
     else:
-        print("Model arch error!")
+        print("Model arch error, {} does not exist".format(model_arch))
+        exit()
 
     # for monitoring
     with tf.name_scope('loss'):
@@ -44,7 +47,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     global_step = tf.Variable(0, trainable=False)
 
     learning_rate = tf.train.exponential_decay(l_rate, global_step,
-                                               1000, 0.95, staircase=True)
+                                               3000, 0.95, staircase=True)
 
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss_mean, global_step=global_step)
 
@@ -57,25 +60,27 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     val_tfrecord_file = paths.VAL_TF_RECORDS
 
     with tf.Session() as sess:
-        next_train_batch = dataset.get_train_data_iter(sess, [train_tfrecord_file], batch_size=train_bz)
-        next_val_batch = dataset.get_val_data_iter(sess, [val_tfrecord_file], batch_size=val_bz)
+        next_train_batch = dataset.get_data_iter(sess, [train_tfrecord_file], "train", batch_size=train_bz)
+        next_val_batch = dataset.get_data_iter(sess, [val_tfrecord_file], "val", batch_size=val_bz)
 
         sess.run(tf.global_variables_initializer())
 
         train_writer = tf.summary.FileWriter(
             os.path.join(paths.TRAIN_SUMMARY_DIR,
+                         model_arch,
                          str(l_rate),
                          datetime.datetime.now().strftime("%Y%m%d-%H%M")),
             sess.graph)
         val_writer = tf.summary.FileWriter(
             os.path.join(paths.VAL_SUMMARY_DIR,
+                         model_arch,
                          str(l_rate),
                          datetime.datetime.now().strftime("%Y%m%d-%H%M")),
             sess.graph)
 
         print("Start training with ")
 
-        checkpoint_dir = os.path.join(paths.CHECKPOINTS_DIR, model_name, str(l_rate))
+        checkpoint_dir = os.path.join(paths.CHECKPOINT_DIR, model_name, str(l_rate))
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
 
@@ -135,5 +140,3 @@ if __name__ == "__main__":
 
     train(MODEL_NAME, MODEL_ARCH, TRAIN_BATCH_SIZE, EVAL_BATCH_SIZE, TRAIN_KEEP_PROB, TRAIN_STEPS_COUNT,
           TRAIN_LEARNING_RATE, INPUT_HEIGHT, INPUT_WIDTH, CATEGORIES)
-
-

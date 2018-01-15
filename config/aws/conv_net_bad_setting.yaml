@@ -1,5 +1,6 @@
 MODEL:
     MODEL_NAME : "conv_net_scratch_not_working"
+    MODEL_ARCH: "conv_net"
     INPUT_HEIGHT: 384
     INPUT_WIDTH: 384
     CLASSES: 120

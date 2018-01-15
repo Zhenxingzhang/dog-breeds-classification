@@ -79,32 +79,17 @@ def read_train_image_record(record):
         image_shape = tf.stack([height_, width_, 3])
         image = tf.reshape(image, image_shape)
 
-        # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-        #     image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
-        aug_image = tf.cast(
-            tf.image.resize_images(
-                image, [IMAGE_HEIGHT + int(IMAGE_HEIGHT/5), IMAGE_WIDTH+int(IMAGE_WIDTH/5)]), tf.uint8)
-        aug_image = tf.random_crop(aug_image, np.array([IMAGE_HEIGHT, IMAGE_WIDTH, 3]))
+        aug_image = tf.image.resize_images(
+                image, [IMAGE_HEIGHT + int(IMAGE_HEIGHT/5), IMAGE_WIDTH+int(IMAGE_WIDTH/5)])
+        aug_image = tf.image.resize_image_with_crop_or_pad(
+            aug_image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
         aug_image = tf.image.random_flip_left_right(aug_image)
         # aug_image = tf.image.random_hue(aug_image, 0.05)
         # aug_image = tf.image.random_saturation(aug_image, 0.5, 2.0)
+        aug_image = tf.cast(aug_image, tf.uint8)
         features["image_resize"] = aug_image
 
     return features
-
-
-def train_images_dataset():
-    filenames_ = tf.placeholder(tf.string)
-    ds_ = tf.contrib.data.TFRecordDataset(filenames_, compression_type='').map(read_train_image_record)
-
-    return ds_, filenames_
-
-
-def get_train_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
-    ds_, file_names_ = train_images_dataset()
-    ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
-    sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
-    return ds_iter_.get_next()
 
 
 def read_val_image_record(record):
@@ -125,28 +110,11 @@ def read_val_image_record(record):
         image_shape = tf.stack([height_, width_, 3])
         image = tf.reshape(image, image_shape)
 
-        # features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-        #     image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
-        aug_image = tf.cast(
-            tf.image.resize_images(
-                image, [IMAGE_HEIGHT, IMAGE_WIDTH]), tf.uint8)
+        aug_image = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
+        aug_image = tf.cast(aug_image, tf.uint8)
         features["image_resize"] = aug_image
 
     return features
-
-
-def val_images_dataset():
-    filenames_ = tf.placeholder(tf.string)
-    ds_ = tf.contrib.data.TFRecordDataset(filenames_, compression_type='').map(read_val_image_record)
-
-    return ds_, filenames_
-
-
-def get_val_data_iter(sess_, tf_records_paths_, buffer_size=4000, batch_size=64):
-    ds_, file_names_ = val_images_dataset()
-    ds_iter_ = ds_.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
-    sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
-    return ds_iter_.get_next()
 
 
 def read_test_image_record(record):
@@ -162,30 +130,34 @@ def read_test_image_record(record):
             })
 
         image = tf.decode_raw(features['image'], tf.uint8)
-
-        # features['image_array'] = tf.decode_raw(features['image'], tf.uint8)
         height_ = tf.cast(features['height'], tf.int32)
         width_ = tf.cast(features['width'], tf.int32)
         image_shape = tf.stack([height_, width_, 3])
         image = tf.reshape(image, image_shape)
 
-        features["image_resize"] = tf.image.resize_image_with_crop_or_pad(
-            image=image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
-        # features["image_resize"] = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
+        aug_image = tf.image.resize_images(image, [IMAGE_HEIGHT, IMAGE_WIDTH])
+        aug_image = tf.cast(aug_image, tf.uint8)
+        features["image_resize"] = aug_image
     return features
 
 
-def test_images_dataset():
-    filenames_ = tf.placeholder(tf.string)
-    ds_ = tf.contrib.data.TFRecordDataset(filenames_, compression_type='').map(read_test_image_record)
+def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=20000, batch_size=64):
+    if phase == "train":
+        read_image_record = read_train_image_record
+    elif phase == "val":
+        read_image_record = read_val_image_record
+    elif phase == "test":
+        read_image_record = read_test_image_record
+    else:
+        raise ValueError('The phase value should be: train/val/test')
 
-    return ds_, filenames_
-
-
-def get_test_data_iter(sess_, tf_records_paths_, batch_size=64):
-    ds_, file_names_ = test_images_dataset()
-    ds_iter_ = ds_.batch(batch_size).make_initializable_iterator()
-    sess_.run(ds_iter_.initializer, feed_dict={file_names_: tf_records_paths_})
+    _file_names = tf.placeholder(tf.string)
+    _ds = tf.contrib.data.TFRecordDataset(_file_names).map(read_image_record)
+    if phase == "train" or phase == "val":
+        ds_iter_ = _ds.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
+    else:
+        ds_iter_ = _ds.batch(batch_size).make_initializable_iterator()
+    sess_.run(ds_iter_.initializer, feed_dict={_file_names: tf_records_paths_})
     return ds_iter_.get_next()
 
 
@@ -249,14 +221,12 @@ if __name__ == '__main__':
     IMAGE_WIDTH = 128
 
     with tf.Graph().as_default() as g, tf.Session().as_default() as sess:
-        ds, filenames = train_images_dataset()
-        ds_iter = ds.batch(10).make_initializable_iterator()
-        next_record = ds_iter.get_next()
 
-        sess.run(ds_iter.initializer, feed_dict={filenames: paths.VAL_TF_RECORDS})
+        next_record = get_data_iter(sess, [paths.TEST_TF_RECORDS], "test")
+
         batch_examples = sess.run(next_record)
         images = batch_examples["image_resize"]
-        label = batch_examples["label"]
+        # label = batch_examples["label"]
 
         print(images.shape)
 
