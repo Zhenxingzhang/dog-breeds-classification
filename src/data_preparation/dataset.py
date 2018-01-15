@@ -80,7 +80,7 @@ def read_train_image_record(record):
         image = tf.reshape(image, image_shape)
 
         aug_image = tf.image.resize_images(
-                image, [IMAGE_HEIGHT + int(IMAGE_HEIGHT/5), IMAGE_WIDTH+int(IMAGE_WIDTH/5)])
+                image, [IMAGE_HEIGHT + IMAGE_HEIGHT, IMAGE_WIDTH + IMAGE_WIDTH])
         aug_image = tf.image.resize_image_with_crop_or_pad(
             aug_image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
         aug_image = tf.image.random_flip_left_right(aug_image)
@@ -141,7 +141,7 @@ def read_test_image_record(record):
     return features
 
 
-def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=20000, batch_size=64):
+def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=4000, batch_size=64):
     if phase == "train":
         read_image_record = read_train_image_record
     elif phase == "val":

@@ -118,7 +118,7 @@ def conv_net(x_input, classes, dropout_keep_prob):
     return logits
 
 
-def conv_2d_relu(inputs, filters, kernel_size, name=None):
+def conv_2d_relu(inputs, filters, kernel_size, mode, name=None):
     """3x3 conv layer: ReLU + (1, 1) stride + He initialization"""
 
     # He initialization = normal dist with stdev = sqrt(2.0/fan-in)
@@ -138,7 +138,7 @@ def conv_2d_relu(inputs, filters, kernel_size, name=None):
     return out
 
 
-def dense_relu(inputs, units, name=None):
+def dense_relu(inputs, units, mode, name=None):
     """3x3 conv layer: ReLU + He initialization"""
 
     # He initialization: normal dist with stdev = sqrt(2.0/fan-in)
@@ -147,7 +147,7 @@ def dense_relu(inputs, units, name=None):
                           kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    out = tf.layers.batch_normalization(out, training=True)
+    out = tf.layers.batch_normalization(out, training=mode)
     out = tf.nn.relu(out)
 
     tf.summary.histogram('act' + name, out)
@@ -155,7 +155,7 @@ def dense_relu(inputs, units, name=None):
     return out
 
 
-def dense(inputs, units, name=None):
+def dense(inputs, units, mode, name=None):
     """3x3 conv layer: ReLU + He initialization"""
 
     # He initialization: normal dist with stdev = sqrt(2.0/fan-in)
@@ -164,7 +164,7 @@ def dense(inputs, units, name=None):
                           kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    out = tf.layers.batch_normalization(out, training=True)
+    out = tf.layers.batch_normalization(out, training=mode)
     tf.summary.histogram('act' + name, out)
 
     return out
@@ -199,7 +199,7 @@ def conv_net_3(training_batch, categories, dropout_prob):
     return logits
 
 
-def vgg_16(training_batch, categories, dropout_keep_prob):
+def vgg_16(training_batch, categories, dropout_keep_prob, mode):
     """VGG-like conv-net
     Args:
     training_batch: batch of images (N, 56, 56, 3)
@@ -212,40 +212,40 @@ def vgg_16(training_batch, categories, dropout_keep_prob):
     tf.summary.histogram('img', training_batch)
 
     # (N, 56, 56, 3)
-    out = conv_2d_relu(out, 64, (3, 3), 'conv1_1')
-    out = conv_2d_relu(out, 64, (3, 3), 'conv1_2')
+    out = conv_2d_relu(out, 64, (3, 3), mode, 'conv1_1')
+    out = conv_2d_relu(out, 64, (3, 3), mode, 'conv1_2')
     out = tf.layers.max_pooling2d(out, (2, 2), (2, 2), name='pool1')
 
     # (N, 28, 28, 64)
-    out = conv_2d_relu(out, 128, (3, 3), 'conv2_1')
-    out = conv_2d_relu(out, 128, (3, 3), 'conv2_2')
+    out = conv_2d_relu(out, 128, (3, 3), mode, 'conv2_1')
+    out = conv_2d_relu(out, 128, (3, 3), mode, 'conv2_2')
     out = tf.layers.max_pooling2d(out, (2, 2), (2, 2), name='pool2')
 
     # (N, 14, 14, 128)
-    out = conv_2d_relu(out, 256, (3, 3), 'conv3_1')
-    out = conv_2d_relu(out, 256, (3, 3), 'conv3_2')
-    out = conv_2d_relu(out, 256, (3, 3), 'conv3_3')
+    out = conv_2d_relu(out, 256, (3, 3), mode, 'conv3_1')
+    out = conv_2d_relu(out, 256, (3, 3), mode, 'conv3_2')
+    out = conv_2d_relu(out, 256, (3, 3), mode, 'conv3_3')
     out = tf.layers.max_pooling2d(out, (2, 2), (2, 2), name='pool3')
 
     # (N, 7, 7, 256)
-    out = conv_2d_relu(out, 512, (3, 3), 'conv4_1')
-    out = conv_2d_relu(out, 512, (3, 3), 'conv4_2')
-    out = conv_2d_relu(out, 512, (3, 3), 'conv4_3')
+    out = conv_2d_relu(out, 512, (3, 3), mode, 'conv4_1')
+    out = conv_2d_relu(out, 512, (3, 3), mode, 'conv4_2')
+    out = conv_2d_relu(out, 512, (3, 3), mode, 'conv4_3')
 
     # fc1: flatten -> fully connected layer
     # (N, 7, 7, 512) -> (N, 25088) -> (N, 4096)
     out = tf.contrib.layers.flatten(out)
-    out = dense_relu(out, 4096, 'fc1')
+    out = dense_relu(out, 4096, mode, 'fc1')
     out = tf.nn.dropout(out, dropout_keep_prob)
 
     # fc2
     # (N, 4096) -> (N, 2048)
-    out = dense_relu(out, 2048, 'fc2')
+    out = dense_relu(out, 2048, mode, 'fc2')
     out = tf.nn.dropout(out, dropout_keep_prob)
 
     # softmax
     # (N, 2048) -> (N, 200)
-    logits = dense(out, categories, 'fc3')
+    logits = dense(out, mode, categories, 'fc3')
 
     return logits
 

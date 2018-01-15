@@ -16,6 +16,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     with tf.name_scope("input"):
         input_images = tf.placeholder(tf.float32, shape=[None, input_h, input_w, 3])
         label = tf.placeholder(tf.int64)
+        mode = tf.placeholder(tf.bool)
         tf.summary.image('images', input_images)
 
     with tf.name_scope('dropout_keep_prob'):
@@ -26,7 +27,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     elif model_arch == "conv_net":
         logits = model.conv_net(input_images, categories, keep_prob_tensor)
     elif model_arch == "vgg_16":
-        logits = model.vgg_16(input_images, categories, keep_prob_tensor)
+        logits = model.vgg_16(input_images, categories, keep_prob_tensor, mode)
     else:
         print("Model arch error, {} does not exist".format(model_arch))
         exit()
@@ -47,7 +48,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     global_step = tf.Variable(0, trainable=False)
 
     learning_rate = tf.train.exponential_decay(l_rate, global_step,
-                                               3000, 0.95, staircase=True)
+                                               2000, 0.5, staircase=True)
 
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss_mean, global_step=global_step)
 
@@ -92,7 +93,8 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
             lr, _, step_loss, step_summary = sess.run([learning_rate, train_op, loss_mean, summary_op],
                                                       feed_dict={input_images: train_images,
                                                                  label: train_labels,
-                                                                 keep_prob_tensor: keep_prob_rate})
+                                                                 keep_prob_tensor: keep_prob_rate,
+                                                                 mode: True})
             train_writer.add_summary(step_summary, i)
             print("Step {}, lr:{},  train loss: {}".format(i, lr, step_loss))
 
@@ -106,7 +108,8 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
                 val_step_loss, val_step_summary = sess.run([loss_mean, summary_op],
                                                            feed_dict={input_images: val_images,
                                                                       label: val_labels,
-                                                                      keep_prob_tensor: 1.0})
+                                                                      keep_prob_tensor: 1.0,
+                                                                      mode: False})
                 val_writer.add_summary(val_step_summary, i)
             #     print("Step {}, val loss: {}".format(i, val_step_loss))
 

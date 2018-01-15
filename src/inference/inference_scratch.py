@@ -5,7 +5,7 @@ import yaml
 import numpy as np
 
 from src.common import paths
-from src.models import conv_net
+from src.models import model
 from src.data_preparation import dataset
 
 
@@ -26,7 +26,7 @@ def main(model_name, l_rate, input_h, input_w, test_bz, categories, output_path)
     with tf.name_scope('dropout_keep_prob'):
         keep_prob_tensor = tf.placeholder(tf.float32)
 
-    logits = conv_net.conv_net_small(input_images, categories, keep_prob_tensor)
+    logits = model.conv_net(input_images, categories, keep_prob_tensor)
     probability = tf.contrib.layers.softmax(logits)
 
     # Add ops to restore values of the variables created from forward pass
