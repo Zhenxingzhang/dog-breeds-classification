@@ -1,8 +1,8 @@
 MODEL:
     MODEL_NAME : "vgg_16_net"
     MODEL_ARCH: "vgg_16"
-    INPUT_HEIGHT: 128
-    INPUT_WIDTH: 128
+    INPUT_HEIGHT: 98
+    INPUT_WIDTH: 98
     CLASSES: 120
 
 TRAIN:

@@ -54,7 +54,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
 
     summary_op = tf.summary.merge_all()
 
-    variables_to_store = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+    variables_to_store = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
     saver = tf.train.Saver(var_list=variables_to_store)
 
     train_tfrecord_file = paths.TRAIN_TF_RECORDS

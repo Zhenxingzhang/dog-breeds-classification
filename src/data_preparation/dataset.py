@@ -80,7 +80,7 @@ def read_train_image_record(record):
         image = tf.reshape(image, image_shape)
 
         aug_image = tf.image.resize_images(
-                image, [IMAGE_HEIGHT + IMAGE_HEIGHT, IMAGE_WIDTH + IMAGE_WIDTH])
+                image, [IMAGE_HEIGHT + int(IMAGE_HEIGHT/5), IMAGE_WIDTH + int(IMAGE_WIDTH/5)])
         aug_image = tf.image.resize_image_with_crop_or_pad(
             aug_image, target_height=IMAGE_HEIGHT, target_width=IMAGE_WIDTH)
         aug_image = tf.image.random_flip_left_right(aug_image)
