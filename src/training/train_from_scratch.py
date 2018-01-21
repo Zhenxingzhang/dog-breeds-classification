@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import model
+from src.models import raw_model as model
 import yaml
 import os
 import datetime
@@ -48,7 +48,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
     global_step = tf.Variable(0, trainable=False)
 
     learning_rate = tf.train.exponential_decay(l_rate, global_step,
-                                               2000, 0.5, staircase=True)
+                                               500, 0.5, staircase=True)
 
     train_op = tf.train.AdamOptimizer(learning_rate).minimize(loss_mean, global_step=global_step)
 
@@ -79,7 +79,7 @@ def train(model_name, model_arch, train_bz, val_bz, keep_prob_rate, steps, l_rat
                          datetime.datetime.now().strftime("%Y%m%d-%H%M")),
             sess.graph)
 
-        print("Start training with ")
+        print("Start training with {}".format(learning_rate))
 
         checkpoint_dir = os.path.join(paths.CHECKPOINT_DIR, model_name, str(l_rate))
         if not os.path.exists(checkpoint_dir):
