@@ -245,7 +245,7 @@ def vgg_16(training_batch, categories, dropout_keep_prob, mode):
 
     # softmax
     # (N, 2048) -> (N, 200)
-    logits = dense(out, mode, categories, 'fc3')
+    logits = dense(out, categories, mode, 'fc3')
 
     return logits
 
