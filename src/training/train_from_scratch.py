@@ -1,7 +1,7 @@
 import tensorflow as tf
 from src.common import paths
 from src.data_preparation import dataset
-from src.models import raw_model as model
+from src.models import model as model
 import yaml
 import os
 import datetime

@@ -126,11 +126,11 @@ def conv_2d_relu(inputs, filters, kernel_size, mode, name=None):
 
     out = tf.layers.conv2d(inputs, filters=filters, kernel_size=kernel_size,
                            padding='same',
-                           kernel_initializer=tf.random_normal_initializer(stddev=0.1),
+                           # kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                            # kernel_initializer=tf.random_normal_initializer(stddev=stddev),
                            kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                            name=name)
-    out = tf.layers.batch_normalization(out, training=True)
+    # out = tf.layers.batch_normalization(out, training=True)
     out = tf.nn.relu(out)
 
     tf.summary.histogram('act' + name, out)
@@ -144,10 +144,10 @@ def dense_relu(inputs, units, mode, name=None):
     # He initialization: normal dist with stdev = sqrt(2.0/fan-in)
     stddev = np.sqrt(2 / int(inputs.shape[1]))
     out = tf.layers.dense(inputs, units,
-                          kernel_initializer=tf.random_normal_initializer(stddev=0.1),
+                          # kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    out = tf.layers.batch_normalization(out, training=mode)
+    # out = tf.layers.batch_normalization(out, training=mode)
     out = tf.nn.relu(out)
 
     tf.summary.histogram('act' + name, out)
@@ -161,10 +161,10 @@ def dense(inputs, units, mode, name=None):
     # He initialization: normal dist with stdev = sqrt(2.0/fan-in)
     stddev = np.sqrt(2 / int(inputs.shape[1]))
     out = tf.layers.dense(inputs, units,
-                          kernel_initializer=tf.random_normal_initializer(stddev=0.1),
+                          # kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    out = tf.layers.batch_normalization(out, training=mode)
+    # out = tf.layers.batch_normalization(out, training=mode)
     tf.summary.histogram('act' + name, out)
 
     return out
@@ -251,6 +251,20 @@ def vgg_16(training_batch, categories, dropout_keep_prob, mode):
 
 
 if __name__ == "__main__":
-    x = tf.placeholder(tf.float32, [None, 128, 128, 3])
+    x_input = tf.placeholder(tf.float32, [None, 128, 128, 3])
+    label = tf.placeholder(tf.int64)
+
     keep_prob = tf.placeholder(tf.float32)
-    logits = conv_net(x, 120, keep_prob)
+    logits = vgg_16(x_input, 2, keep_prob, False)
+
+    loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=label, logits=logits)
+
+    # ini = tf.random_normal_initializer(stddev=0.1)
+
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+
+        x = np.ones([1, 128, 128, 3])
+        loss_, logits_ = sess.run([loss, logits], {x_input: x, keep_prob: 1.0, label: [1]})
+        print("{}, {}".format(loss_, logits_))
+        # sess.run(ini)
