@@ -130,7 +130,7 @@ def conv_2d_relu(inputs, filters, kernel_size, mode, name=None):
                            # kernel_initializer=tf.random_normal_initializer(stddev=stddev),
                            kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                            name=name)
-    # out = tf.layers.batch_normalization(out, training=True)
+    out = tf.layers.batch_normalization(out, training=True)
     out = tf.nn.relu(out)
 
     tf.summary.histogram('act' + name, out)
@@ -147,7 +147,7 @@ def dense_relu(inputs, units, mode, name=None):
                           # kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    # out = tf.layers.batch_normalization(out, training=mode)
+    out = tf.layers.batch_normalization(out, training=mode)
     out = tf.nn.relu(out)
 
     tf.summary.histogram('act' + name, out)
@@ -164,7 +164,7 @@ def dense(inputs, units, mode, name=None):
                           # kernel_initializer=tf.random_normal_initializer(stddev=0.1),
                           kernel_regularizer=tf.contrib.layers.l2_regularizer(1.0),
                           name=name)
-    # out = tf.layers.batch_normalization(out, training=mode)
+    out = tf.layers.batch_normalization(out, training=mode)
     tf.summary.histogram('act' + name, out)
 
     return out
@@ -235,6 +235,9 @@ def vgg_16(training_batch, categories, dropout_keep_prob, mode):
     # fc1: flatten -> fully connected layer
     # (N, 7, 7, 512) -> (N, 25088) -> (N, 4096)
     out = tf.contrib.layers.flatten(out)
+
+    out = dense(out, 256, mode, 'bn1')
+
     out = dense_relu(out, 4096, mode, 'fc1')
     out = tf.nn.dropout(out, dropout_keep_prob)
 
@@ -255,7 +258,7 @@ if __name__ == "__main__":
     label = tf.placeholder(tf.int64)
 
     keep_prob = tf.placeholder(tf.float32)
-    logits = vgg_16(x_input, 2, keep_prob, False)
+    logits = vgg_16(x_input, 120, keep_prob, False)
 
     loss = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=label, logits=logits)
 
