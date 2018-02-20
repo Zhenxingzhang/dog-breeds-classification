@@ -5,8 +5,8 @@ sys.path.append("/data/slim/models/research/slim/")
 from datasets import flowers
 from preprocessing import inception_preprocessing
 from src.utils import helper
-
 from src.data_preparation import dataset
+from src.common import paths
 from nets import nets_factory
 from sklearn.metrics import precision_recall_fscore_support as score
 
@@ -24,8 +24,8 @@ def run(config):
     # Specify where the Model, trained on ImageNet, was saved.
 
     # This might take a few minutes.
-    train_summary_dir = os.path.join("/data/summary/flowers/", config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE), "train")
-    checkpoint_dir = os.path.join('/data/checkpoints/flowers/', config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
+    train_summary_dir = os.path.join(paths.TRAIN_SUMMARY_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
+    checkpoint_dir = os.path.join(paths.CHECKPOINT_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
 
     # Create the log directory here. Must be done here otherwise import will activate this unneededly.
     if not os.path.exists(checkpoint_dir):
