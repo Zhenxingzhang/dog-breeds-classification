@@ -55,26 +55,26 @@ def infer_test(config_):
         _, decoder, _ = dataset.sparse_label_coder()
         breeds = decoder(np.identity(dataset.num_classes))
 
-        with tf.Session() as sess, open(test_output, 'w') as f:
+        with tf.Session() as sess, open(test_output, "w") as output:
+
             print("writing results to {}".format(test_output))
             init_fn(sess)
             print("Restore model from: {}".format(model_path))
 
             sess.run(tf.initialize_local_variables())
 
-            with open(test_output, "w") as output:
-                output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
+            output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
 
-                try:
-                    with slim.queues.QueueRunners(sess):
-                        while True:
-                            test_ids, preds = sess.run([ids, predictions])
-                            for (prob_list, id_) in zip(preds, test_ids):
-                                output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))
-                except tf.errors.OutOfRangeError:
-                    print('')
+            try:
+                with slim.queues.QueueRunners(sess):
+                    while True:
+                        test_ids, preds = sess.run([ids, predictions])
+                        for (prob_list, id_) in zip(preds, test_ids):
+                            output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))
+            except tf.errors.OutOfRangeError:
+                print('')
 
-        print('predictions saved to %s' % paths.TEST_PREDICTIONS)
+        print('predictions saved to %s' % test_output)
 
 
 if __name__ == '__main__':

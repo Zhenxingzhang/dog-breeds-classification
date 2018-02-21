@@ -29,5 +29,5 @@ EVAL:
 
 TEST:
     BATCH_SIZE : 200
-    TF_RECORDS : ""
+    TF_RECORDS : "/data/dog_breeds/kaggle/dogs_test.tfrecords"
     OUTPUT_PATH : "/data/outputs/dog_breeds/test/"

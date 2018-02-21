@@ -190,7 +190,8 @@ def load_test_batch(tf_record_name, batch_size, width, height, num_epochs=1, cap
     images_batch, ids_batch = tf.train.shuffle_batch([image, id_],
                                                      batch_size=batch_size,
                                                      capacity=capacity,
-                                                     min_after_dequeue=min_after_dequeue)
+                                                     min_after_dequeue=min_after_dequeue,
+                                                     allow_smaller_final_batch=True)
 
     return images_batch, ids_batch
 
