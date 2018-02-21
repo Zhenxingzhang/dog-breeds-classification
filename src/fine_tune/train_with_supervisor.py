@@ -27,7 +27,7 @@ def run(config):
 
     # Create the log directory here. Must be done here otherwise import will activate this unneededly.
     if not os.path.exists(checkpoint_dir):
-        os.mkdir(checkpoint_dir)
+        os.makedirs(checkpoint_dir)
 
     # ======================= TRAINING PROCESS =========================
     # Now we start to construct the graph and build our model
@@ -35,13 +35,13 @@ def run(config):
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        training_tfrecord, ds_iter = dataset.load_batch(
-            "train",
+        images, labels = dataset.load_batch(
+            config.TRAIN_TF_RECORDS,
             config.TRAIN_BATCH_SIZE,
             config.INPUT_WIDTH,
             config.INPUT_WIDTH,
-            is_training=True)
-        images, labels = ds_iter.get_next()
+            is_training=True,
+            num_epochs=config.TRAIN_EPOCHS_COUNT)
 
         # Know the number steps to take before decaying the learning rate and batches per epoch
         num_batches_per_epoch = int(dataset.num_samples / config.TRAIN_BATCH_SIZE)
@@ -134,7 +134,7 @@ def run(config):
         # Define your supervisor for running a managed session.
         # Do not run the summary_op automatically or else it will consume too much memory
         sv = tf.train.Supervisor(
-            save_model_secs=30,
+            save_model_secs=300,
             logdir=checkpoint_dir,
             summary_op=None,
             init_fn=restore_fn,
@@ -142,7 +142,6 @@ def run(config):
 
         # Run the managed session
         with sv.managed_session() as sess:
-            sess.run(ds_iter.initializer, feed_dict={training_tfrecord: config.TRAIN_TF_RECORDS})
 
             for step in xrange(num_steps_per_epoch * config.TRAIN_EPOCHS_COUNT):
                 # At the start of every epoch, show the vital information:

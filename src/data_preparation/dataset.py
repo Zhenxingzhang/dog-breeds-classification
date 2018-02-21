@@ -5,9 +5,14 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from src.common import consts
 from src.common import paths
+from preprocessing import inception_preprocessing
+
 
 IMAGE_HEIGHT = 384
 IMAGE_WIDTH = 384
+
+num_samples = 20580
+num_classes = 120
 
 
 def get_int64_feature(example, name):
@@ -141,18 +146,64 @@ def read_test_image_record(record):
     return features
 
 
-def load_batch(split, batch_size, width, height, buffer_size=4000, is_training=False):
-    assert split == "train" or "eval"
-    if is_training:
-        read_image_record = read_train_image_record
-    else:
-        read_image_record = read_val_image_record
-    file_names_ = tf.placeholder(tf.string)
-    IMAGE_WIDTH = width
-    IMAGE_HEIGHT = height
-    _ds = tf.contrib.data.TFRecordDataset(file_names_).map(read_image_record)
-    ds_iter_ = _ds.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
-    return file_names_, ds_iter_
+# def load_batch(split, batch_size, width, height, buffer_size=4000, is_training=False):
+#     assert split == "train" or "eval"
+#     if is_training:
+#         read_image_record = read_train_image_record
+#     else:
+#         read_image_record = read_val_image_record
+#     file_names_ = tf.placeholder(tf.string)
+#     IMAGE_WIDTH = width
+#     IMAGE_HEIGHT = height
+#     _ds = tf.contrib.data.TFRecordDataset(file_names_).map(read_image_record)
+#     ds_iter_ = _ds.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
+#     return file_names_, ds_iter_
+
+def load_batch(tf_record_name,  batch_size, width, height,
+               is_training=False, num_epochs=10, capacity=2000, min_after_dequeue=1000):
+    # this function return images_batch and labels_batch op that can be executed using sess.run
+
+    def read_and_decode_single_example(filename):
+        # first construct a queue containing a list of filenames.
+        # this lets a user split up there dataset in multiple files to keep
+        # size down
+        filename_queue = tf.train.string_input_producer([filename], num_epochs=num_epochs)
+        # Unlike the TFRecordWriter, the TFRecordReader is symbolic
+        reader = tf.TFRecordReader()
+        # One can read a single serialized example from a filename
+        # serialized_example is a Tensor of type string.
+        _, serialized_example = reader.read(filename_queue)
+        # The serialized example is converted back to actual values.
+        # One needs to describe the format of the objects to be returned
+        features = tf.parse_single_example(
+            serialized_example,
+            features={
+                'label': tf.FixedLenFeature([], tf.int64),
+                'width': tf.FixedLenFeature([], tf.int64),
+                'height': tf.FixedLenFeature([], tf.int64),
+                'image': tf.FixedLenFeature([], tf.string)
+            })
+        # now return the converted data
+        image_ = tf.decode_raw(features['image'], tf.uint8)
+        height_ = tf.cast(features['height'], tf.int32)
+        width_ = tf.cast(features['width'], tf.int32)
+        image_shape = tf.stack([height_, width_, 3])
+        image_ = tf.reshape(image_, image_shape)
+
+        return features['label'], image_
+
+    # returns symbolic label and image
+    label, image_raw = read_and_decode_single_example(tf_record_name)
+
+    # Preprocess image for usage by Inception.
+    image = inception_preprocessing.preprocess_image(image_raw, height, width, is_training=is_training)
+
+    # groups examples into batches randomly
+    images_batch, labels_batch = tf.train.shuffle_batch([image, label], batch_size=batch_size,
+                                                        capacity=capacity,
+                                                        min_after_dequeue=min_after_dequeue)
+
+    return images_batch, labels_batch
 
 
 def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=4000, batch_size=64):

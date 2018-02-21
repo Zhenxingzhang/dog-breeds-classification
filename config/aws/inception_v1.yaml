@@ -1,0 +1,33 @@
+MODEL:
+    MODEL_NAME: "inception_v1_dog_breeds"
+    PRETRAIN_MODEL: "inception_v1"
+    PRETAIN_MODEL_URL : "http://download.tensorflow.org/models/inception_v1_2016_08_28.tar.gz"
+    PRETAIN_MODEL_PATH : "/data/pretain_model/inception_v1/inception_v1.ckpt"
+    EXCLUDE_NODES:
+     - "InceptionV1/Logits"
+     - "InceptionV1/AuxLogits"
+    INPUT_HEIGHT: 224
+    INPUT_WIDTH: 224
+    CLASSES: 120
+
+TRAIN:
+    BATCH_SIZE : 64
+    EPOCHS_COUNT : 40
+    LEARNING_RATE : 0.00001
+    L2_WEIGHT_DECAY : 0.001
+    KEEP_PROB : 0.5
+    TRAIN_EPOCHS_BEFORE_DECAY: 10
+    TRAIN_RATE_DECAY_FACTOR: 0.7
+    TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/train/train.tfrecord"
+    L2_WEIGHT_DECAY: 0.001
+
+EVAL:
+    BATCH_SIZE : 100
+    TF_RECORDS : "/data/dog_breeds/stanford_ds/val/val.tfrecord"
+    OUTPUT_PATH : "/data/outputs/dog_breeds/eval/"
+
+
+TEST:
+    BATCH_SIZE : 200
+    TF_RECORDS : ""
+    OUTPUT_PATH : "/data/outputs/dog_breeds/"
