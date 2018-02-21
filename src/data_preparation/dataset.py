@@ -2,11 +2,13 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import sys
 from sklearn import preprocessing
 from src.common import consts
 from src.common import paths
-from preprocessing import inception_preprocessing
 
+sys.path.append("/data/slim/models/research/slim/")
+from preprocessing import inception_preprocessing
 
 IMAGE_HEIGHT = 384
 IMAGE_WIDTH = 384

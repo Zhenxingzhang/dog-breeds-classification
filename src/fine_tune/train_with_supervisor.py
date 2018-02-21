@@ -2,7 +2,6 @@ from tensorflow.contrib import slim
 
 import sys
 sys.path.append("/data/slim/models/research/slim/")
-from datasets import flowers
 from preprocessing import inception_preprocessing
 from src.utils import helper
 from src.data_preparation import dataset
@@ -42,6 +41,8 @@ def run(config):
             config.INPUT_WIDTH,
             is_training=True,
             num_epochs=config.TRAIN_EPOCHS_COUNT)
+
+        tf.summary.image('images/train', images)
 
         # Know the number steps to take before decaying the learning rate and batches per epoch
         num_batches_per_epoch = int(dataset.num_samples / config.TRAIN_BATCH_SIZE)
