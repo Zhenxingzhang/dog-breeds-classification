@@ -5,8 +5,8 @@ from sklearn.metrics import precision_recall_fscore_support as score
 
 import sys
 sys.path.append("/data/slim/models/research/slim/")
-from datasets import flowers
 from itertools import izip
+from src.common import paths
 
 import os
 import sys
@@ -17,26 +17,26 @@ import csv
 
 
 def predict_set(config_):
-    model_path = os.path.join('/data/checkpoints/flowers/', config_.MODEL_NAME, str(config_.TRAIN_LEARNING_RATE))
+    model_path = os.path.join(paths.CHECKPOINT_DIR, config_.MODEL_NAME, str(config_.TRAIN_LEARNING_RATE))
     if not os.path.exists(model_path):
         print("Model not exist: {}".format(model_path))
         exit()
 
     output_path = os.path.join(config_.EVAL_OUTPUT, config_.MODEL_NAME)
     if not os.path.exists(output_path):
-        os.mkdir(output_path)
+        os.mkdirs(output_path)
     eval_output = os.path.join(output_path, "eval_results.csv")
 
     with tf.Graph().as_default():
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        valid_dataset = flowers.get_split('validation', config_.TRAIN_TF_RECORDS)
-        images, labels = dataset.load_batch(valid_dataset,
-                                            batch_size=config_.TRAIN_BATCH_SIZE,
-                                            height=config_.INPUT_HEIGHT,
-                                            width=config_.INPUT_WIDTH,
-                                            epochs=1)
+        images, labels = dataset.load_batch(config_.EVAL_TF_RECORDS,
+                                            config.EVAL_BATCH_SIZE,
+                                            config.INPUT_WIDTH,
+                                            config.INPUT_WIDTH,
+                                            is_training=False,
+                                            num_epochs=config.TRAIN_EPOCHS_COUNT)
         # Create the model inference
         net_fn = nets_factory.get_network_fn(
             config_.PRETAIN_MODEL,
