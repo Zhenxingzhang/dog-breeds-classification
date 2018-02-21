@@ -148,6 +148,52 @@ def read_test_image_record(record):
     return features
 
 
+def load_test_batch(tf_record_name, batch_size, width, height, num_epochs=1, capacity=2000, min_after_dequeue=1000):
+    # this function return images_batch and labels_batch op that can be executed using sess.run
+
+    def read_and_decode_single_example(filename):
+        # first construct a queue containing a list of filenames.
+        # this lets a user split up there dataset in multiple files to keep
+        # size down
+        filename_queue = tf.train.string_input_producer([filename], num_epochs=num_epochs)
+        # Unlike the TFRecordWriter, the TFRecordReader is symbolic
+        reader = tf.TFRecordReader()
+        # One can read a single serialized example from a filename
+        # serialized_example is a Tensor of type string.
+        _, serialized_example = reader.read(filename_queue)
+        # The serialized example is converted back to actual values.
+        # One needs to describe the format of the objects to be returned
+        features = tf.parse_single_example(
+            serialized_example,
+            features={
+                'id': tf.FixedLenFeature([], tf.string),
+                'width': tf.FixedLenFeature([], tf.int64),
+                'height': tf.FixedLenFeature([], tf.int64),
+                'image': tf.FixedLenFeature([], tf.string)
+            })
+        # now return the converted data
+        image_ = tf.decode_raw(features['image'], tf.uint8)
+        height_ = tf.cast(features['height'], tf.int32)
+        width_ = tf.cast(features['width'], tf.int32)
+        image_shape = tf.stack([height_, width_, 3])
+        image_ = tf.reshape(image_, image_shape)
+
+        return features['id'], image_
+
+    # returns symbolic label and image
+    id_, image_raw = read_and_decode_single_example(tf_record_name)
+
+    # Preprocess image for usage by Inception.
+    image = inception_preprocessing.preprocess_image(image_raw, height, width, is_training=False)
+
+    # groups examples into batches randomly
+    images_batch, ids_batch = tf.train.shuffle_batch([image, id_],
+                                                     batch_size=batch_size,
+                                                     capacity=capacity,
+                                                     min_after_dequeue=min_after_dequeue)
+
+    return images_batch, ids_batch
+
 # def load_batch(split, batch_size, width, height, buffer_size=4000, is_training=False):
 #     assert split == "train" or "eval"
 #     if is_training:

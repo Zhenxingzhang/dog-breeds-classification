@@ -30,6 +30,11 @@ def parse_config_file(config_filename):
     arg_config.EVAL_TF_RECORDS = str(cfg["EVAL"]["TF_RECORDS"])
     arg_config.EVAL_OUTPUT = str(cfg["EVAL"]["OUTPUT_PATH"])
 
+    arg_config.TEST_BATCH_SIZE = cfg["TEST"]["BATCH_SIZE"]
+    arg_config.TEST_TF_RECORDS = str(cfg["TEST"]["TF_RECORDS"])
+    arg_config.TEST_OUTPUT = str(cfg["TEST"]["OUTPUT_PATH"])
+
+
     return arg_config
 
 

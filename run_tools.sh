@@ -2,4 +2,4 @@
 
 tensorboard --logdir /data/summary/dog_breeds/ &
 
-jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --notebook-dir='/notebooks' "$@"
+jupyter notebook --port=8888 --no-browser --ip=0.0.0.0 --notebook-dir='/app/notebooks' "$@"

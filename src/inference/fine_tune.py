@@ -1,42 +1,39 @@
-from src.data_preparation import dataset
+import os
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import argparse
+
 from src.utils import helper
+from src.data_preparation import dataset
+from src.common import paths
 
 import sys
 sys.path.append("/data/slim/models/research/slim/")
 
 from nets import nets_factory
-from itertools import izip
-from src.common import paths
-
-import os
-import sys
-import argparse
-import numpy as np
-import tensorflow as tf
-import csv
 
 
-def predict_set(config_):
+def infer_test(config_):
     model_path = os.path.join(paths.CHECKPOINT_DIR, config_.MODEL_NAME, str(config_.TRAIN_LEARNING_RATE))
     if not os.path.exists(model_path):
         print("Model not exist: {}".format(model_path))
         exit()
 
-    output_path = os.path.join(config_.EVAL_OUTPUT, config_.MODEL_NAME)
+    output_path = os.path.join(config_.TEST_OUTPUT, config_.MODEL_NAME)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    eval_output = os.path.join(output_path, "eval_results.csv")
+    test_output = os.path.join(output_path, "results.csv")
 
     with tf.Graph().as_default():
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        images, labels = dataset.load_batch(config_.EVAL_TF_RECORDS,
-                                            config_.EVAL_BATCH_SIZE,
+        images, ids = dataset.load_test_batch(config_.TEST_TF_RECORDS,
+                                            config_.TEST_BATCH_SIZE,
                                             config_.INPUT_WIDTH,
-                                            config_.INPUT_WIDTH,
-                                            is_training=False,
-                                            num_epochs=1)
+                                            config_.INPUT_WIDTH, num_epochs=1)
         # Create the model inference
         net_fn = nets_factory.get_network_fn(
             config_.PRETAIN_MODEL,
@@ -44,7 +41,7 @@ def predict_set(config_):
             is_training=False)
 
         _, end_points = net_fn(images)
-        predictions = tf.argmax(end_points['Predictions'], 1)
+        predictions = end_points['Predictions']
 
         # Define the scopes that you want to exclude for restoration
         variables_to_restore = slim.get_variables_to_restore()
@@ -55,25 +52,29 @@ def predict_set(config_):
             checkpoint_path,
             variables_to_restore)
 
-        with tf.Session() as sess, open(eval_output, 'w') as f:
-            print("writing results to {}".format(eval_output))
+        _, decoder, _ = dataset.sparse_label_coder()
+        breeds = decoder(np.identity(dataset.num_classes))
+
+        with tf.Session() as sess, open(test_output, 'w') as f:
+            print("writing results to {}".format(test_output))
             init_fn(sess)
             print("Restore model from: {}".format(model_path))
 
             sess.run(tf.initialize_local_variables())
 
-            writer = csv.writer(f)
-            writer.writerow(["y_true", "preds"])
+            with open(test_output, "w") as output:
+                output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
 
-            try:
-                with slim.queues.QueueRunners(sess):
-                    while True:
-                        y_true, preds = sess.run([labels, predictions])
-                        writer.writerows(zip(y_true, preds))
-                        print("precessing {} records".format(str(y_true.shape[0])))
-            except tf.errors.OutOfRangeError:
-                print('')
-        print("Prediction finished.")
+                try:
+                    with slim.queues.QueueRunners(sess):
+                        while True:
+                            test_ids, preds = sess.run([ids, predictions])
+                            for (prob_list, id_) in zip(preds, test_ids):
+                                output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))
+                except tf.errors.OutOfRangeError:
+                    print('')
+
+        print('predictions saved to %s' % paths.TEST_PREDICTIONS)
 
 
 if __name__ == '__main__':
@@ -85,6 +86,12 @@ if __name__ == '__main__':
                         help='the config file name must be provide')
     args = parser.parse_args()
 
-    config = helper.parse_config_file(args.config_filename)
-    predict_set(config)
+    arg_config = helper.parse_config_file(args.config_filename)
+    infer_test(arg_config)
+
+
+
+
+
+
 
