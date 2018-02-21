@@ -21,8 +21,6 @@ import argparse
 
 def run(config):
 
-    # Specify where the Model, trained on ImageNet, was saved.
-
     # This might take a few minutes.
     train_summary_dir = os.path.join(paths.TRAIN_SUMMARY_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
     checkpoint_dir = os.path.join(paths.CHECKPOINT_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
@@ -37,12 +35,13 @@ def run(config):
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        train_dataset = flowers.get_split('train', config.TRAIN_TF_RECORDS)
-        images, labels = dataset.load_batch(
-            train_dataset,
-            batch_size=config.TRAIN_BATCH_SIZE,
-            width=config.INPUT_WIDTH,
+        training_tfrecord, ds_iter = dataset.load_batch(
+            "train",
+            config.TRAIN_BATCH_SIZE,
+            config.INPUT_WIDTH,
+            config.INPUT_WIDTH,
             is_training=True)
+        images, labels = ds_iter.get_next()
 
         # Know the number steps to take before decaying the learning rate and batches per epoch
         num_batches_per_epoch = int(dataset.num_samples / config.TRAIN_BATCH_SIZE)
@@ -143,6 +142,8 @@ def run(config):
 
         # Run the managed session
         with sv.managed_session() as sess:
+            sess.run(ds_iter.initializer, feed_dict={training_tfrecord: config.TRAIN_TF_RECORDS})
+
             for step in xrange(num_steps_per_epoch * config.TRAIN_EPOCHS_COUNT):
                 # At the start of every epoch, show the vital information:
                 if step % num_batches_per_epoch == 0:

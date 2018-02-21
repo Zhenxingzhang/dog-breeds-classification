@@ -141,6 +141,20 @@ def read_test_image_record(record):
     return features
 
 
+def load_batch(split, batch_size, width, height, buffer_size=4000, is_training=False):
+    assert split == "train" or "eval"
+    if is_training:
+        read_image_record = read_train_image_record
+    else:
+        read_image_record = read_val_image_record
+    file_names_ = tf.placeholder(tf.string)
+    IMAGE_WIDTH = width
+    IMAGE_HEIGHT = height
+    _ds = tf.contrib.data.TFRecordDataset(file_names_).map(read_image_record)
+    ds_iter_ = _ds.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
+    return file_names_, ds_iter_
+
+
 def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=4000, batch_size=64):
     if phase == "train":
         read_image_record = read_train_image_record
