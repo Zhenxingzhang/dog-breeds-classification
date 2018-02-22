@@ -13,7 +13,7 @@ from preprocessing import inception_preprocessing
 IMAGE_HEIGHT = 384
 IMAGE_WIDTH = 384
 
-num_samples = 20580
+num_samples = 19380
 num_classes = 120
 
 
@@ -245,8 +245,13 @@ def load_batch(tf_record_name,  batch_size, width, height,
     # returns symbolic label and image
     label, image_raw = read_and_decode_single_example(tf_record_name)
 
+    image = preprocess_image(image_raw, height, width, is_training=is_training)
+    # aug_image = tf.image.random_hue(aug_image, 0.05)
+    # aug_image = tf.image.random_saturation(aug_image, 0.5, 2.0)
+    # aug_image = tf.cast(aug_image, tf.uint8)
+
     # Preprocess image for usage by Inception.
-    image = inception_preprocessing.preprocess_image(image_raw, height, width, is_training=is_training)
+    # image = inception_preprocessing.preprocess_image(image_raw, height, width, is_training=is_training)
 
     # groups examples into batches randomly
     images_batch, labels_batch = tf.train.shuffle_batch([image, label], batch_size=batch_size,
@@ -255,6 +260,18 @@ def load_batch(tf_record_name,  batch_size, width, height,
                                                         allow_smaller_final_batch=True)
 
     return images_batch, labels_batch
+
+
+def preprocess_image(image_raw, height, width, is_training=False):
+    if is_training:
+        image = tf.image.resize_images(
+            image_raw, [height + int(height / 5), width + int(width / 5)])
+        image = tf.image.resize_image_with_crop_or_pad(
+            image, target_height=height, target_width=width)
+        image = tf.image.random_flip_left_right(image)
+        return image
+    else:
+        return tf.image.resize_images(image_raw, [height, width])
 
 
 def get_data_iter(sess_, tf_records_paths_, phase, buffer_size=4000, batch_size=64):

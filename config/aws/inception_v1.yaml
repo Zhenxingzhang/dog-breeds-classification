@@ -19,7 +19,6 @@ TRAIN:
     TRAIN_EPOCHS_BEFORE_DECAY: 10
     TRAIN_RATE_DECAY_FACTOR: 0.7
     TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/train/train.tfrecord"
-    L2_WEIGHT_DECAY: 0.001
 
 EVAL:
     BATCH_SIZE : 100

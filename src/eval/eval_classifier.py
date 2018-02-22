@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
         # First create the dataset and load one batch
         images, labels = dataset.load_batch(
-            config.TRAIN_TF_RECORDS,
+            config.EVAL_TF_RECORDS,
             config.EVAL_BATCH_SIZE,
             config.INPUT_WIDTH,
             config.INPUT_WIDTH,
@@ -79,13 +79,14 @@ if __name__ == '__main__':
             summary_ops.append(op)
 
         num_examples = 100
-        num_batches = math.ceil(num_examples / config.EVAL_BATCH_SIZE)
+        # num_batches = math.ceil(num_examples / config.EVAL_BATCH_SIZE)
+        num_batches = 1
 
         # Setup the global step.
         slim.get_or_create_global_step()
 
         # How often to run the evaluation.
-        eval_interval_secs = 10
+        eval_interval_secs = 300
         slim.evaluation.evaluation_loop(
             '',
             checkpoint_dir,
