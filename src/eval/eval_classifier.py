@@ -30,6 +30,8 @@ if __name__ == '__main__':
     eval_summary_dir = os.path.join(paths.VAL_SUMMARY_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
     checkpoint_dir = os.path.join(paths.CHECKPOINT_DIR, config.MODEL_NAME, str(config.TRAIN_LEARNING_RATE))
 
+    print("Model path: {}".format(checkpoint_dir))
+
     # This might take a few minutes.
     with tf.Graph().as_default():
         summary_ops = []
