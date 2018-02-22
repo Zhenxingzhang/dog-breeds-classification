@@ -208,6 +208,7 @@ def load_test_batch(tf_record_name, batch_size, width, height, num_epochs=1, cap
 #     ds_iter_ = _ds.shuffle(buffer_size).repeat().batch(batch_size).make_initializable_iterator()
 #     return file_names_, ds_iter_
 
+
 def load_batch(tf_record_name,  batch_size, width, height,
                is_training=False, num_epochs=10, capacity=2000, min_after_dequeue=1000):
     # this function return images_batch and labels_batch op that can be executed using sess.run
@@ -250,7 +251,8 @@ def load_batch(tf_record_name,  batch_size, width, height,
     # groups examples into batches randomly
     images_batch, labels_batch = tf.train.shuffle_batch([image, label], batch_size=batch_size,
                                                         capacity=capacity,
-                                                        min_after_dequeue=min_after_dequeue)
+                                                        min_after_dequeue=min_after_dequeue,
+                                                        allow_smaller_final_batch=True)
 
     return images_batch, labels_batch
 

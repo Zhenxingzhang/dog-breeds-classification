@@ -61,7 +61,7 @@ def infer_test(config_):
             init_fn(sess)
             print("Restore model from: {}".format(model_path))
 
-            sess.run(tf.initialize_local_variables())
+            sess.run(tf.local_variables_initializer())
 
             output.write("id,{}\n".format(",".join(str(dog) for dog in breeds)))
 
