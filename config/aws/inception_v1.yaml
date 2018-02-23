@@ -1,5 +1,5 @@
 MODEL:
-    MODEL_NAME: "inception_v1_dog_breeds"
+    MODEL_NAME: "inception_v1"
     PRETRAIN_MODEL: "inception_v1"
     PRETAIN_MODEL_URL : "http://download.tensorflow.org/models/inception_v1_2016_08_28.tar.gz"
     PRETAIN_MODEL_PATH : "/data/pretain_model/inception_v1/inception_v1.ckpt"
@@ -12,11 +12,11 @@ MODEL:
 
 TRAIN:
     BATCH_SIZE : 64
-    EPOCHS_COUNT : 40
+    EPOCHS_COUNT : 100
     LEARNING_RATE : 0.00001
     L2_WEIGHT_DECAY : 0.001
     KEEP_PROB : 0.5
-    TRAIN_EPOCHS_BEFORE_DECAY: 10
+    TRAIN_EPOCHS_BEFORE_DECAY: 20
     TRAIN_RATE_DECAY_FACTOR: 0.7
     TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/train/train.tfrecord"
 

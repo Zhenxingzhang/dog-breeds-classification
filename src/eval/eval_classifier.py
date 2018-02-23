@@ -57,7 +57,8 @@ if __name__ == '__main__':
         # summary_ops.append(tf.summary.scalar('Recall', np.mean(recall)))
 
         # Specify the loss function:
-        entropy_loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
+        entropy_loss = tf.reduce_mean(tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits))
+        print("entropy_loss: {}".format(entropy_loss))
 
         # Create some summaries to visualize the training process:
         summary_ops.append(tf.summary.scalar('losses/entropy_loss', entropy_loss))

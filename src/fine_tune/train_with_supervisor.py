@@ -69,7 +69,7 @@ def run(config):
         tf.summary.scalar('losses/regular_loss', regular_loss)
 
         # obtain the regularization losses as well
-        total_loss = tf.losses.get_total_loss()
+        total_loss = tf.reduce_mean(tf.losses.get_total_loss())
         tf.summary.scalar('losses/total_loss', total_loss)
 
         # # Specify the loss function, this will add regulation loss as well:
