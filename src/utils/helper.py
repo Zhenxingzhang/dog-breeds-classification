@@ -34,7 +34,6 @@ def parse_config_file(config_filename):
     arg_config.TEST_TF_RECORDS = str(cfg["TEST"]["TF_RECORDS"])
     arg_config.TEST_OUTPUT = str(cfg["TEST"]["OUTPUT_PATH"])
 
-
     return arg_config
 
 

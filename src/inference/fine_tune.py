@@ -68,6 +68,7 @@ def infer_test(config_):
             try:
                 with slim.queues.QueueRunners(sess):
                     while True:
+                        print("Processing {} records".format(config_.TEST_BATCH_SIZE))
                         test_ids, preds = sess.run([ids, predictions])
                         for (prob_list, id_) in zip(preds, test_ids):
                             output.writelines("{},{}\n".format(id_, ",".join(str(prob_) for prob_ in prob_list)))

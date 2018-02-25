@@ -245,21 +245,28 @@ def load_batch(tf_record_name,  batch_size, width, height,
     # returns symbolic label and image
     label, image_raw = read_and_decode_single_example(tf_record_name)
 
-    image = preprocess_image(image_raw, height, width, is_training=is_training)
+    # image = preprocess_image(image_raw, height, width, is_training=is_training)
     # aug_image = tf.image.random_hue(aug_image, 0.05)
     # aug_image = tf.image.random_saturation(aug_image, 0.5, 2.0)
     # aug_image = tf.cast(aug_image, tf.uint8)
 
     # Preprocess image for usage by Inception.
-    # image = inception_preprocessing.preprocess_image(image_raw, height, width, is_training=is_training)
+    image = inception_preprocessing.preprocess_image(image_raw, height, width,
+                                                     bbox=tf.constant([[[0, 0, 0.1, 0.1]]]),
+                                                     is_training=is_training,
+                                                     add_image_summaries=False)
+
+    raw_image = tf.image.resize_images(image_raw, [height, width])
 
     # groups examples into batches randomly
-    images_batch, labels_batch = tf.train.shuffle_batch([image, label], batch_size=batch_size,
-                                                        capacity=capacity,
-                                                        min_after_dequeue=min_after_dequeue,
-                                                        allow_smaller_final_batch=True)
+    raw_image_batch, images_batch, labels_batch = tf.train.shuffle_batch(
+        [raw_image, image, label],
+        batch_size=batch_size,
+        capacity=capacity,
+        min_after_dequeue=min_after_dequeue,
+        allow_smaller_final_batch=True)
 
-    return images_batch, labels_batch
+    return raw_image_batch, images_batch, labels_batch
 
 
 def preprocess_image(image_raw, height, width, is_training=False):
