@@ -1,12 +1,11 @@
 import pyprind
-import tensorflow as tf
 
 from src.common import consts
-import dataset
-import image_utils
+import src.data_preparation.dataset
+import src.data_preparation.backups.image_utils
 from src.freezing import inception
 from src.common import paths
-from tf_record_utils import *
+from src.data_preparation.backups.tf_record_utils import *
 
 def read_example(id, breed):
     image_str = tf.read_file(tf.string_join([paths.TRAIN_DIR, '/', id, paths.JPEG_EXT], separator=''))
@@ -41,9 +40,9 @@ def image_augmenter():
 
     # img1_tf = tf.image.encode_jpeg(image_utils.rotate_ccw(img_decoded, 1))
     # img2_tf = tf.image.encode_jpeg(image_utils.rotate_ccw(img_decoded, 3))
-    img1_tf = tf.image.encode_jpeg(image_utils.adjust_contrast(img_decoded))
-    img2_tf = tf.image.encode_jpeg(image_utils.adjust_brightness(img_decoded, -0.15))
-    img3_tf = tf.image.encode_jpeg(image_utils.flip_along_width(img_decoded))
+    img1_tf = tf.image.encode_jpeg(src.data_preparation.backups.image_utils.adjust_contrast(img_decoded))
+    img2_tf = tf.image.encode_jpeg(src.data_preparation.backups.image_utils.adjust_brightness(img_decoded, -0.15))
+    img3_tf = tf.image.encode_jpeg(src.data_preparation.backups.image_utils.flip_along_width(img_decoded))
 
     # examples.append(build_train_example(
     #    tf.image.encode_jpeg(image_utils.adjust_brightness(img_decoded, 0.1)).eval(),
@@ -68,7 +67,7 @@ def image_augmenter():
 
 
 def convert_train(tfrecords_path):
-    one_hot_encoder, _ = dataset.one_hot_label_encoder()
+    one_hot_encoder, _ = src.data_preparation.dataset.one_hot_label_encoder()
 
     inception_graph = tf.Graph()
     inception_sess = tf.Session(graph=inception_graph)

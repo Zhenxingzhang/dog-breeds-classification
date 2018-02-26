@@ -20,19 +20,19 @@ def parse_annotation(path_):
     }
 
 
-def get_image_path(breed_dir, filename):
-    path_ = os.path.join(images_root_dir, breed_dir, filename + '.jpg')
+def get_image_path(breed_dir_, filename):
+    path_ = os.path.join(images_root_dir, breed_dir_, filename + '.jpg')
     return path_
 
 
 if __name__ == "__main__":
 
-    images_root_dir = os.path.join(paths.DATA_ROOT, 'Images')
-    annotations_root_dir = os.path.join(paths.DATA_ROOT, 'Annotation')
+    images_root_dir = os.path.join(paths.STANFORD_DATA_DIR, 'Images')
+    annotations_root_dir = os.path.join(paths.STANFORD_DATA_DIR, 'Annotation')
 
     sparse_encoder, _, _ = dataset.sparse_label_coder()
 
-    csv_file = paths.CSV_FILE
+    csv_file = paths.STANFORD_CSV_FILE
     print('Creating csv:{}'.format(csv_file))
 
     # paths_gen = glob.glob((os.path.join(DATA_DIR, 'train'))+'/*/images/*JPEG')
@@ -51,18 +51,20 @@ if __name__ == "__main__":
 
     print("Write csv file finished!")
 
-    # train
-    train_csv = paths.TRAIN_CSV_FILE
-    val_csv = paths.VAL_CSV_FILE
-
-    np.random.seed(0)
-
-    with open(csv_file) as f:
-        lines = f.readlines()
-        np.random.shuffle(lines)
-
-        print(len(lines))
-        with open(train_csv, 'w') as writer:
-            writer.writelines(lines[:-1200])
-        with open(val_csv, 'w') as writer:
-            writer.writelines(lines[-1200:])
+    # stanford_csv = paths.STANFORD_CSV_FILE
+    # train_csv = paths.TRAIN_CSV_FILE
+    # val_csv = paths.VAL_CSV_FILE
+    #
+    # np.random.seed(0)
+    #
+    # with open(csv_file) as f:
+    #     lines = f.readlines()
+    #     np.random.shuffle(lines)
+    #
+    #     print(len(lines))
+    #     with open(stanford_csv, 'w') as writer:
+    #         writer.writelines(lines)
+    #     # with open(train_csv, 'w') as writer:
+    #     #     writer.writelines(lines[:-1200])
+    #     # with open(val_csv, 'w') as writer:
+    #     #     writer.writelines(lines[-1200:])

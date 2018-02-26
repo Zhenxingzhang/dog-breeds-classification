@@ -1,0 +1,32 @@
+MODEL:
+    MODEL_NAME: "inception_resnet_v2_2"
+    PRETRAIN_MODEL: "inception_resnet_v2"
+    PRETAIN_MODEL_URL: "http://download.tensorflow.org/models/inception_resnet_v2_2016_08_30.tar.gz"
+    PRETAIN_MODEL_PATH: "/data/pretain_model/inception_resnet_v2/inception_resnet_v2_2016_08_30.ckpt"
+    EXCLUDE_NODES:
+      - 'InceptionResnetV2/Logits'
+      - 'InceptionResnetV2/AuxLogits'
+    INPUT_HEIGHT: 299
+    INPUT_WIDTH: 299
+    CLASSES: 120
+
+TRAIN:
+    BATCH_SIZE : 32
+    EPOCHS_COUNT : 60
+    LEARNING_RATE : 0.00005
+    L2_WEIGHT_DECAY : 0.0001
+    KEEP_PROB : 0.5
+    TRAIN_EPOCHS_BEFORE_DECAY: 20
+    TRAIN_RATE_DECAY_FACTOR: 0.9
+    TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/stanford.tfrecord"
+
+EVAL:
+    BATCH_SIZE : 100
+    TF_RECORDS : "/data/dog_breeds/kaggle/train.tfrecord"
+    OUTPUT_PATH : "/data/outputs/dog_breeds/eval/"
+
+
+TEST:
+    BATCH_SIZE : 200
+    TF_RECORDS : "/data/dog_breeds/kaggle/dogs_test.tfrecords"
+    OUTPUT_PATH : "/data/outputs/dog_breeds/test/"

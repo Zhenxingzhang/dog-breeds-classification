@@ -2,9 +2,8 @@ import os
 import xml.etree.ElementTree
 from src.common import consts
 from src.data_preparation import dataset
-from src.freezing import inception
 from src.common import paths
-from tf_record_utils import *
+from src.data_preparation.backups.tf_record_utils import *
 
 
 def parse_annotation(path):
@@ -22,21 +21,21 @@ def parse_annotation(path):
     }
 
 
-def parse_image(breed_dir, filename):
-    path = os.path.join(images_root_dir, breed_dir, filename + '.jpg')
+def parse_image(breed_dir_, filename):
+    path = os.path.join(images_root_dir, breed_dir_, filename + '.jpg')
     img_raw = open(path, 'r').read()
 
     return img_raw
 
 
 def build_stanford_example(img_raw, inception_output, one_hot_label, annotation):
-    example = tf.train.Example(features=tf.train.Features(feature={
+    example_ = tf.train.Example(features=tf.train.Features(feature={
         'label': bytes_feature(annotation['breed'].encode()),
         consts.IMAGE_RAW_FIELD: bytes_feature(img_raw),
         consts.LABEL_ONE_HOT_FIELD: float_feature(one_hot_label),
         consts.INCEPTION_OUTPUT_FIELD: float_feature(inception_output)}))
 
-    return example
+    return example_
 
 
 def build_stanford_images(img_raw, label):
@@ -82,7 +81,7 @@ if __name__ == '__main__':
     #
     #     print('Finished')
 
-    one_hot_encoder, _ = dataset.sparse_label_coder()
+    sparse_encoder, _ = dataset.sparse_label_coder()
     with tf.Graph().as_default(), \
         tf.Session().as_default() as sess, \
         tf.python_io.TFRecordWriter(paths.STANFORD_DS_TF_RECORDS,
@@ -93,7 +92,7 @@ if __name__ == '__main__':
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
                 # print(annotation_file)
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
-                one_hot_label = one_hot_encoder([annotation['breed']])[0]
+                one_hot_label = sparse_encoder([annotation['breed']])[0]
                 image = parse_image(breed_dir, annotation_file)
                 example = build_stanford_images(image, one_hot_label)
 

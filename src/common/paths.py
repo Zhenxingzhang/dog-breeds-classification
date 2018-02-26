@@ -4,8 +4,6 @@ JPEG_EXT = '.jpg'
 DATA_ROOT = '/data/dog_breeds/stanford_ds'
 TRAIN_DIR = os.path.join(DATA_ROOT, 'train')
 VAL_DIR = os.path.join(DATA_ROOT, 'val')
-
-CSV_FILE = os.path.join(DATA_ROOT, 'stanford.csv')
 TRAIN_CSV_FILE = os.path.join(TRAIN_DIR, 'train.csv')
 VAL_CSV_FILE = os.path.join(VAL_DIR, 'val.csv')
 
@@ -17,13 +15,20 @@ VAL_SUMMARY_DIR = "/data/summary/dog_breeds/val"
 
 CHECKPOINT_DIR = '/data/checkpoints/dog_breeds'
 
-KAGGLE_DATA_DIR = "/data/dog_breeds/kaggle"
+STANFORD_DATA_DIR = '/data/dog_breeds/stanford_ds'
+STANFORD_CSV_FILE = os.path.join(STANFORD_DATA_DIR, 'stanford.csv')
+STANFORD_TFRECORD = os.path.join(STANFORD_DATA_DIR, 'stanford.tfrecord')
 
-KG_TRAIN_CSV = os.path.join(KAGGLE_DATA_DIR, 'labels.csv')
-KG_TRAIN_TFRECORD = os.path.join(KAGGLE_DATA_DIR, 'train.tfrecord')
+# STANFORD_TRAIN_CSV = os.path.join(STANFORD_DATA_DIR, 'train.csv')
 
-TEST_CSV_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.csv')
-TEST_TF_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.tfrecords')
+KG_DATA_DIR = "/data/dog_breeds/kaggle"
+
+KG_CSV = os.path.join(KG_DATA_DIR, 'labels.csv')
+KG_TRAIN_CSV = os.path.join(KG_DATA_DIR, 'train.csv')
+KG_TRAIN_TFRECORD = os.path.join(KG_DATA_DIR, 'train.tfrecord')
+
+TEST_CSV_RECORDS = os.path.join(KG_DATA_DIR, 'dogs_test.csv')
+TEST_TF_RECORDS = os.path.join(KG_DATA_DIR, 'dogs_test.tfrecords')
 
 
 # LABELS = os.path.join(DATA_ROOT, 'train', 'labels.csv')
