@@ -19,6 +19,9 @@ CHECKPOINT_DIR = '/data/checkpoints/dog_breeds'
 
 KAGGLE_DATA_DIR = "/data/dog_breeds/kaggle"
 
+KG_TRAIN_CSV = os.path.join(KAGGLE_DATA_DIR, 'labels.csv')
+KG_TRAIN_TFRECORD = os.path.join(KAGGLE_DATA_DIR, 'train.tfrecord')
+
 TEST_CSV_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.csv')
 TEST_TF_RECORDS = os.path.join(KAGGLE_DATA_DIR, 'dogs_test.tfrecords')
 
