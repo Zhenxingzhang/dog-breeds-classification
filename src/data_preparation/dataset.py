@@ -9,6 +9,7 @@ from src.common import paths
 
 sys.path.append("/data/slim/models/research/slim/")
 from preprocessing import inception_preprocessing
+from preprocessing import preprocessing_factory
 
 IMAGE_HEIGHT = 384
 IMAGE_WIDTH = 384
@@ -231,6 +232,7 @@ def load_batch(tf_record_name,  batch_size, width, height,
                 'label': tf.FixedLenFeature([], tf.int64),
                 'width': tf.FixedLenFeature([], tf.int64),
                 'height': tf.FixedLenFeature([], tf.int64),
+                'bbox': tf.FixedLenFeature([4], tf.float32),
                 'image': tf.FixedLenFeature([], tf.string)
             })
         # now return the converted data
@@ -240,23 +242,28 @@ def load_batch(tf_record_name,  batch_size, width, height,
         image_shape = tf.stack([height_, width_, 3])
         image_ = tf.reshape(image_, image_shape)
 
-        return features['label'], image_
+        return image_, [[features['bbox']]], features['label']
 
     # returns symbolic label and image
-    label, image_raw = read_and_decode_single_example(tf_record_name)
+    image_raw, bbox, label = read_and_decode_single_example(tf_record_name)
 
     # image = preprocess_image(image_raw, height, width, is_training=is_training)
     # aug_image = tf.image.random_hue(aug_image, 0.05)
     # aug_image = tf.image.random_saturation(aug_image, 0.5, 2.0)
     # aug_image = tf.cast(aug_image, tf.uint8)
+    slim_preprocessing = preprocessing_factory.get_preprocessing("inception_v1", is_training=is_training)
 
     # Preprocess image for usage by Inception.
-    image = inception_preprocessing.preprocess_image(image_raw, height, width,
-                                                     bbox=tf.constant([[[0, 0, 0.1, 0.1]]]),
-                                                     is_training=is_training,
-                                                     add_image_summaries=False)
+    image = slim_preprocessing(
+        image_raw, height, width,
+        bbox=bbox,
+        add_image_summaries=False)
 
-    raw_image = tf.image.resize_images(image_raw, [height, width])
+    image_with_box = tf.image.draw_bounding_boxes(
+        tf.cast(tf.expand_dims(image_raw, 0), tf.float32), bbox
+    )[0]
+
+    raw_image = tf.image.resize_images(image_with_box, [height, width])
 
     # groups examples into batches randomly
     raw_image_batch, images_batch, labels_batch = tf.train.shuffle_batch(
@@ -341,7 +348,7 @@ def sparse_label_coder():
 
 if __name__ == '__main__':
     encoder, decoder, text_decoder = sparse_label_coder()
-    print(encoder(['african_hunting_dog'])[0])
+    print(encoder(['african_hunting_dog']))
 
     # with tf.Graph().as_default() as g, tf.Session().as_default() as sess:
     #     ds, filenames = features_dataset()

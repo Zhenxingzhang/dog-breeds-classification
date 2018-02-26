@@ -2,12 +2,10 @@ from tensorflow.contrib import slim
 
 import sys
 sys.path.append("/data/slim/models/research/slim/")
-from preprocessing import inception_preprocessing
 from src.utils import helper
 from src.data_preparation import dataset
 from src.common import paths
 from nets import nets_factory
-from sklearn.metrics import precision_recall_fscore_support as score
 
 import tensorflow as tf
 import numpy as np

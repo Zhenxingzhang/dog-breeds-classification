@@ -1,4 +1,4 @@
-FROM gcr.io/tensorflow/tensorflow:1.4.0-gpu
+FROM gcr.io/tensorflow/tensorflow:1.5.0-gpu
 
 
 COPY run_tools.sh /

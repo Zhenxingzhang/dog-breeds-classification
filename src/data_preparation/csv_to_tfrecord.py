@@ -30,8 +30,15 @@ def csv_to_record(csv_file, tfrecord_file, is_train=True):
             image = grey_to_rgb(image) if image.shape[2] == 1 else image
             image_raw = image.tostring()
 
-            text_label = re.sub(r"[\n\t\s]*", "", line.split(',')[1])
-            label = -1 if (text_label == '' or text_label is None) else text_label
+            bbox_str = line.split(',')[1].split(" ")
+            assert(len(bbox_str) == 4)
+            bbox = [float(bbox_str[1]) / height,
+                    float(bbox_str[0]) / width,
+                    float(bbox_str[3]) / height,
+                    float(bbox_str[2]) / width]
+
+            sparse_label = re.sub(r"[\n\t\s]*", "", line.split(',')[-1])
+            label = -1 if (sparse_label == '' or sparse_label is None) else sparse_label
 
             # construct the Example proto object
             if is_train:
@@ -41,6 +48,7 @@ def csv_to_record(csv_file, tfrecord_file, is_train=True):
                         'label': tf.train.Feature(int64_list=tf.train.Int64List(value=[int(label)])),
                         'height': tf.train.Feature(int64_list=tf.train.Int64List(value=[height])),
                         'width': tf.train.Feature(int64_list=tf.train.Int64List(value=[width])),
+                        'bbox': tf.train.Feature(float_list=tf.train.FloatList(value=bbox)),
                         'image': tf.train.Feature(bytes_list=tf.train.BytesList(value=[image_raw]))
                     }))
             else:
@@ -64,7 +72,7 @@ if __name__ == '__main__':
     np.random.seed(0)
 
     # create TFRecords from csv files if necessary
-    train_csv = paths.TRAIN_CSV_FILE
+    train_csv = "/data/dog_breeds/stanford_ds/stanford.csv"
     train_tfrecord = paths.TRAIN_TF_RECORDS
 
     val_csv = paths.VAL_CSV_FILE

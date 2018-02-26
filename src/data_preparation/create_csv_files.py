@@ -30,7 +30,7 @@ if __name__ == "__main__":
     images_root_dir = os.path.join(paths.DATA_ROOT, 'Images')
     annotations_root_dir = os.path.join(paths.DATA_ROOT, 'Annotation')
 
-    one_hot_encoder, _, _ = dataset.sparse_label_coder()
+    sparse_encoder, _, _ = dataset.sparse_label_coder()
 
     csv_file = paths.CSV_FILE
     print('Creating csv:{}'.format(csv_file))
@@ -41,10 +41,13 @@ if __name__ == "__main__":
             print(breed_dir)
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
-                one_hot_label = one_hot_encoder([annotation['breed']])[0]
-
+                sparse_label = sparse_encoder([annotation['breed']])[0]
+                bbox = [annotation['bndbox_xmin'],
+                        annotation['bndbox_ymin'],
+                        annotation['bndbox_xmax'],
+                        annotation['bndbox_ymax']]
                 path = get_image_path(breed_dir, annotation_file)
-                writer.write('{},{}\n'.format(os.path.abspath(path), one_hot_label))
+                writer.write('{},{},{}\n'.format(os.path.abspath(path), " ".join(str(x) for x in bbox), sparse_label))
 
     print("Write csv file finished!")
 
