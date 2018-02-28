@@ -10,13 +10,31 @@ def parse_annotation(path_):
     object_ = xml_root.findall('object')[0]
     name = object_.findall('name')[0].text.lower()
     bound_box = object_.findall('bndbox')[0]
+    size_ = xml_root.findall('size')[0]
+    width = float(size_.find('width').text)
+    height = float(size_.find('height').text)
+
+    ymin = float(bound_box.findall('ymin')[0].text)
+    xmin = float(bound_box.findall('xmin')[0].text)
+    ymax = float(bound_box.findall('ymax')[0].text) / (height+1)
+    xmax = float(bound_box.findall('xmax')[0].text) / (width+1)
+
+    ymin = ymin / height if ymin > 0 else 0.0
+    xmin = xmin / width if xmin > 0 else 0.0
+    ymax = ymax / height if ymax < height else 1.0
+    xmax = xmax / width if xmax < width else 1.0
+
+    assert ymin < 1.0
+    assert xmin < 1.0
+    assert ymax < 1.0
+    assert xmax < 1.0
 
     return {
         'breed': name,
-        'bndbox_xmin': bound_box.findall('xmin')[0].text,
-        'bndbox_ymin': bound_box.findall('ymin')[0].text,
-        'bndbox_xmax': bound_box.findall('xmax')[0].text,
-        'bndbox_ymax': bound_box.findall('ymax')[0].text
+        'bndbox_xmin': ymin,
+        'bndbox_ymin': xmin,
+        'bndbox_xmax': ymax,
+        'bndbox_ymax': xmax
     }
 
 
@@ -42,14 +60,14 @@ if __name__ == "__main__":
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
                 annotation = parse_annotation(os.path.join(annotations_root_dir, breed_dir, annotation_file))
                 sparse_label = sparse_encoder([annotation['breed']])[0]
-                bbox = [annotation['bndbox_xmin'],
-                        annotation['bndbox_ymin'],
-                        annotation['bndbox_xmax'],
-                        annotation['bndbox_ymax']]
+                bbox = [annotation['bndbox_ymin'],
+                        annotation['bndbox_xmin'],
+                        annotation['bndbox_ymax'],
+                        annotation['bndbox_xmax']]
                 path = get_image_path(breed_dir, annotation_file)
                 writer.write('{},{},{}\n'.format(os.path.abspath(path), " ".join(str(x) for x in bbox), sparse_label))
 
-    print("Write csv file finished!")
+    print("Finish writing csv file: {}".format(csv_file))
 
     # stanford_csv = paths.STANFORD_CSV_FILE
     # train_csv = paths.TRAIN_CSV_FILE

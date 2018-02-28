@@ -22,11 +22,11 @@ if __name__ == "__main__":
                 # [xmin, ymin, xmax, ymax], [width_min, height_min, width_max, height_max]
                 bbox = [0, 0, shape[0], shape[1]]
                 writer.write('{},{},{}\n'.format(image_path, " ".join(str(x) for x in bbox), sparse_label))
+    print("Finish: {}".format(paths.KG_TRAIN_CSV))
 
     with open(paths.TEST_CSV_RECORDS, 'w') as writer:
-        for image_file in [f for f in os.listdir(os.path.join(paths.KAGGLE_DATA_DIR, "test"))]:
-            full_path = os.path.join(paths.KAGGLE_DATA_DIR, "test", image_file)
+        for image_file in [f for f in os.listdir(os.path.join(paths.KG_DATA_DIR, "test"))]:
+            full_path = os.path.join(paths.KG_DATA_DIR, "test", image_file)
             writer.write('{},{}\n'.format(os.path.abspath(full_path), image_file.split(".")[0]))
 
-    print("Finish: {}".format(paths.KG_TRAIN_CSV))
 

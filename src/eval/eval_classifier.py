@@ -37,7 +37,7 @@ if __name__ == '__main__':
         summary_ops = []
 
         # First create the dataset and load one batch
-        images, labels = dataset.load_batch(
+        _, images, labels = dataset.load_batch(
             config.EVAL_TF_RECORDS,
             config.EVAL_BATCH_SIZE,
             config.INPUT_WIDTH,
