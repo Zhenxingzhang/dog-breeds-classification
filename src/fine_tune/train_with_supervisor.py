@@ -32,7 +32,7 @@ def run(config):
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        images, labels = dataset.load_batch(
+        _, images, labels = dataset.load_batch(
             config.TRAIN_TF_RECORDS,
             config.TRAIN_BATCH_SIZE,
             config.INPUT_WIDTH,

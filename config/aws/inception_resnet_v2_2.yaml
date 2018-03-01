@@ -22,7 +22,7 @@ TRAIN:
 
 EVAL:
     BATCH_SIZE : 100
-    TF_RECORDS : "/data/dog_breeds/kaggle/train.tfrecord"
+    TF_RECORDS : "/data/dog_breeds/kaggle/train_no_dups.tfrecord"
     OUTPUT_PATH : "/data/outputs/dog_breeds/eval/"
 
 

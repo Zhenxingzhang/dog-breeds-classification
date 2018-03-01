@@ -24,8 +24,8 @@ STANFORD_TFRECORD = os.path.join(STANFORD_DATA_DIR, 'stanford.tfrecord')
 KG_DATA_DIR = "/data/dog_breeds/kaggle"
 
 KG_CSV = os.path.join(KG_DATA_DIR, 'labels.csv')
-KG_TRAIN_CSV = os.path.join(KG_DATA_DIR, 'train.csv')
-KG_TRAIN_TFRECORD = os.path.join(KG_DATA_DIR, 'train.tfrecord')
+KG_TRAIN_CSV = os.path.join(KG_DATA_DIR, 'train_no_dups.csv')
+KG_TRAIN_TFRECORD = os.path.join(KG_DATA_DIR, 'train_no_dups.tfrecord')
 
 TEST_CSV_RECORDS = os.path.join(KG_DATA_DIR, 'dogs_test.csv')
 TEST_TF_RECORDS = os.path.join(KG_DATA_DIR, 'dogs_test.tfrecords')

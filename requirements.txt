@@ -8,3 +8,5 @@ scipy
 jupyter
 kaggle-cli
 tqdm
+imagehash
+dictionaries
