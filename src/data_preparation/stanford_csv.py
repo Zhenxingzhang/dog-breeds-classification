@@ -50,11 +50,11 @@ if __name__ == "__main__":
 
     sparse_encoder, _, _ = dataset.sparse_label_coder()
 
-    csv_file = paths.STANFORD_CSV_FILE
-    print('Creating csv:{}'.format(csv_file))
+    stanford_csv = paths.STANFORD_CSV_FILE
+    print('Creating csv:{}'.format(stanford_csv))
 
     # paths_gen = glob.glob((os.path.join(DATA_DIR, 'train'))+'/*/images/*JPEG')
-    with open(csv_file, 'w') as writer:
+    with open(stanford_csv, 'w') as writer:
         for breed_dir in [d for d in os.listdir(annotations_root_dir) if not d.startswith('.')]:
             print(breed_dir)
             for annotation_file in [f for f in os.listdir(os.path.join(annotations_root_dir, breed_dir))]:
@@ -67,22 +67,19 @@ if __name__ == "__main__":
                 path = get_image_path(breed_dir, annotation_file)
                 writer.write('{},{},{}\n'.format(os.path.abspath(path), " ".join(str(x) for x in bbox), sparse_label))
 
-    print("Finish writing csv file: {}".format(csv_file))
+    print("Finish writing csv file: {}".format(stanford_csv))
 
-    # stanford_csv = paths.STANFORD_CSV_FILE
-    # train_csv = paths.TRAIN_CSV_FILE
-    # val_csv = paths.VAL_CSV_FILE
-    #
-    # np.random.seed(0)
-    #
-    # with open(csv_file) as f:
-    #     lines = f.readlines()
-    #     np.random.shuffle(lines)
-    #
-    #     print(len(lines))
-    #     with open(stanford_csv, 'w') as writer:
-    #         writer.writelines(lines)
-    #     # with open(train_csv, 'w') as writer:
-    #     #     writer.writelines(lines[:-1200])
-    #     # with open(val_csv, 'w') as writer:
-    #     #     writer.writelines(lines[-1200:])
+    train_csv = paths.TRAIN_CSV_FILE
+    val_csv = paths.VAL_CSV_FILE
+
+    np.random.seed(0)
+
+    with open(stanford_csv) as f:
+        lines = f.readlines()
+        np.random.shuffle(lines)
+
+        print(len(lines))
+        with open(train_csv, 'w') as writer:
+            writer.writelines(lines[:-1200])
+        with open(val_csv, 'w') as writer:
+            writer.writelines(lines[-1200:])

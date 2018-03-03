@@ -12,17 +12,17 @@ MODEL:
 
 TRAIN:
     BATCH_SIZE : 32
-    EPOCHS_COUNT : 60
+    EPOCHS_COUNT : 10
     LEARNING_RATE : 0.00005
     L2_WEIGHT_DECAY : 0.0001
     KEEP_PROB : 0.5
-    TRAIN_EPOCHS_BEFORE_DECAY: 20
+    TRAIN_EPOCHS_BEFORE_DECAY: 5
     TRAIN_RATE_DECAY_FACTOR: 0.9
-    TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/stanford.tfrecord"
+    TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/train.tfrecord"
 
 EVAL:
     BATCH_SIZE : 100
-    TF_RECORDS : "/data/dog_breeds/kaggle/train_no_dups.tfrecord"
+    TF_RECORDS : "/data/dog_breeds/stanford_ds/val/val.tfrecord"
     OUTPUT_PATH : "/data/outputs/dog_breeds/eval/"
 
 

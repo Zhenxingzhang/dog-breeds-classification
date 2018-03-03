@@ -31,7 +31,7 @@ def predict_set(config_):
         tf.logging.set_verbosity(tf.logging.INFO)  # Set the verbosity to INFO level
 
         # First create the dataset and load one batch
-        images, labels = dataset.load_batch(config_.EVAL_TF_RECORDS,
+        _, images, labels = dataset.load_batch(config_.EVAL_TF_RECORDS,
                                             config_.EVAL_BATCH_SIZE,
                                             config_.INPUT_WIDTH,
                                             config_.INPUT_WIDTH,
@@ -60,7 +60,7 @@ def predict_set(config_):
             init_fn(sess)
             print("Restore model from: {}".format(model_path))
 
-            sess.run(tf.initialize_local_variables())
+            sess.run(tf.local_variables_initializer())
 
             writer = csv.writer(f)
             writer.writerow(["y_true", "preds"])

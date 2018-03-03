@@ -72,11 +72,11 @@ if __name__ == '__main__':
     np.random.seed(0)
 
     # create TFRecords from csv files if necessary
-    train_csv = paths.STANFORD_CSV_FILE
-    train_tfrecord = paths.STANFORD_TFRECORD
+    train_csv = paths.TRAIN_CSV_FILE
+    train_tfrecord = paths.TRAIN_TF_RECORDS
 
-    val_csv = paths.KG_TRAIN_CSV
-    val_tfrecord = paths.KG_TRAIN_TFRECORD
+    val_csv = paths.VAL_CSV_FILE
+    val_tfrecord = paths.VAL_TF_RECORDS
 
     test_csv = paths.TEST_CSV_RECORDS
     test_tfrecord = paths.TEST_TF_RECORDS
