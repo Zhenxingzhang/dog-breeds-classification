@@ -17,6 +17,9 @@ TRAIN:
     L2_WEIGHT_DECAY : 0.001
     KEEP_PROB : 0.5
     TRAIN_EPOCHS_BEFORE_DECAY: 20
+    TRAINABLE_SCOPES :
+      - 'InceptionResnetV2/Logits'
+      - 'InceptionResnetV2/AuxLogits'
     TRAIN_RATE_DECAY_FACTOR: 0.7
     TF_RECORDS_PATH : "/data/dog_breeds/stanford_ds/train/train.tfrecord"
 

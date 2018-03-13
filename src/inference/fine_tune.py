@@ -31,9 +31,9 @@ def infer_test(config_):
 
         # First create the dataset and load one batch
         images, ids = dataset.load_test_batch(config_.TEST_TF_RECORDS,
-                                            config_.TEST_BATCH_SIZE,
-                                            config_.INPUT_WIDTH,
-                                            config_.INPUT_WIDTH, num_epochs=1)
+                                              config_.TEST_BATCH_SIZE,
+                                              config_.INPUT_WIDTH,
+                                              config_.INPUT_WIDTH, num_epochs=1)
         # Create the model inference
         net_fn = nets_factory.get_network_fn(
             config_.PRETAIN_MODEL,

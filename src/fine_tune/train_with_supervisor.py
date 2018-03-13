@@ -8,11 +8,8 @@ from src.common import paths
 from nets import nets_factory
 
 import tensorflow as tf
-import numpy as np
 import os
 import time
-import logging
-import datetime
 import argparse
 
 
@@ -89,8 +86,17 @@ def run(config):
         # Now we can define the optimizer that takes on the learning rate
         optimizer = tf.train.AdamOptimizer(learning_rate=lr)
 
+        if config.TRAINABLE_SCOPES is not None:
+            scopes = [scope.strip() for scope in config.TRAINABLE_SCOPES]
+            training_variables = []
+            for scope in scopes:
+                variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope)
+                training_variables.extend(variables)
+        else:
+            training_variables = None
+
         # Create the train_op.
-        train_op = slim.learning.create_train_op(total_loss, optimizer)
+        train_op = slim.learning.create_train_op(total_loss, optimizer, variables_to_train=training_variables)
 
         # State the metrics that you want to predict. We get a predictions that is not one_hot_encoded.
         predictions = tf.argmax(end_points['Predictions'], 1)
